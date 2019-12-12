@@ -131,6 +131,9 @@ func main() {
 	var videosToUpdate []videosToUpdateItem
 
 	for k, dataItem := range ghtData {
+		if dataItem.From == "" {
+			continue
+		}
 
 		if k >= ApiLimit {
 			break
