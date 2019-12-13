@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 
@@ -14,78 +13,123 @@ import (
 	"google.golang.org/api/drive/v3"
 )
 
+func getFilesInFolder(srv *drive.Service, folderId string) ([]*drive.File, error) {
+	var done bool
+	var page string
+	var files []*drive.File
+
+	for !done {
+		query := fmt.Sprintf("'%s' in parents", folderId)
+		response, err := srv.Files.List().Q(query).PageSize(50).Fields("nextPageToken, files(id, name)").PageToken(page).Do()
+		if err != nil {
+			return nil, fmt.Errorf("list files from drive: %w", err)
+		}
+		for _, file := range response.Files {
+			files = append(files, file)
+		}
+		page = response.NextPageToken
+		if page == "" {
+			done = true
+		}
+	}
+	return files, nil
+}
+
 // Retrieve a token, saves the token, then returns the generated client.
-func getDriveClient(config *oauth2.Config) *http.Client {
+func getDriveClient(ctx context.Context, config *oauth2.Config) (*http.Client, error) {
 	// The file token.json stores the user's access and refresh tokens, and is
 	// created automatically when the authorization flow completes for the first
 	// time.
 	tokFile := "drive_token.json"
 	tok, err := driveTokenFromFile(tokFile)
 	if err != nil {
-		tok = getDriveTokenFromWeb(config)
-		saveDriveToken(tokFile, tok)
+		tok, err = getDriveTokenFromWeb(config)
+		if err != nil {
+			return nil, fmt.Errorf("can't get drive token from web: %w", err)
+		}
+		err = saveDriveToken(tokFile, tok)
+		if err != nil {
+			return nil, fmt.Errorf("can't save drive token: %w", err)
+		}
 	}
-	return config.Client(context.Background(), tok)
+	return config.Client(ctx, tok), nil
 }
 
 // Request a token from the web, then returns the retrieved token.
-func getDriveTokenFromWeb(config *oauth2.Config) *oauth2.Token {
+func getDriveTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Printf("Go to the following link in your browser then type the "+
 		"authorization code: \n%v\n", authURL)
 
 	var authCode string
 	if _, err := fmt.Scan(&authCode); err != nil {
-		log.Fatalf("Unable to read authorization code %v", err)
+		return nil, fmt.Errorf("unable to read authorization code %w", err)
 	}
 
 	tok, err := config.Exchange(context.TODO(), authCode)
 	if err != nil {
-		log.Fatalf("Unable to retrieve token from web %v", err)
+		return nil, fmt.Errorf("unable to retrieve token from web %w", err)
 	}
-	return tok
+	return tok, nil
 }
 
 // Retrieves a token from a local file.
 func driveTokenFromFile(file string) (*oauth2.Token, error) {
 	f, err := os.Open(file)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("can't open drive token %q from file: %w", file, err)
 	}
 	defer f.Close()
 	tok := &oauth2.Token{}
 	err = json.NewDecoder(f).Decode(tok)
-	return tok, err
+	if err != nil {
+		return nil, fmt.Errorf("can't decode drive token from json: %w", err)
+	}
+	return tok, nil
 }
 
 // Saves a token to a file path.
-func saveDriveToken(path string, token *oauth2.Token) {
-	fmt.Printf("Saving credential file to: %s\n", path)
+func saveDriveToken(path string, token *oauth2.Token) error {
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
-		log.Fatalf("Unable to cache oauth token: %v", err)
+		return fmt.Errorf("unable to create token file %q: %w", path, err)
 	}
 	defer f.Close()
-	json.NewEncoder(f).Encode(token)
+	if err = json.NewEncoder(f).Encode(token); err != nil {
+		return fmt.Errorf("unable to encode token file: %w", err)
+	}
+	return nil
 }
 
-func getDriveService() *drive.Service {
-	b, err := ioutil.ReadFile("/root/.credentials/drive_secret.json")
+func getDriveService(ctx context.Context) (*drive.Service, error) {
+
+	var fname string
+	if isLocal() {
+		fname = "/Users/dave/.credentials/drive_secret.json"
+	} else {
+		fname = "/root/.credentials/drive_secret.json"
+	}
+
+	b, err := ioutil.ReadFile(fname)
 	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
+		return nil, fmt.Errorf("unable to read client secret file %q: %w", fname, err)
 	}
 
 	// If modifying these scopes, delete your previously saved token.json.
 	config, err := google.ConfigFromJSON(b, drive.DriveScope)
 	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
+		return nil, fmt.Errorf("unable to parse client secret file to config: %w", err)
 	}
-	client := getDriveClient(config)
+
+	client, err := getDriveClient(ctx, config)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get drive client: %w", err)
+	}
 
 	srv, err := drive.New(client)
 	if err != nil {
-		log.Fatalf("Unable to retrieve Drive client: %v", err)
+		return nil, fmt.Errorf("unable to retrieve Drive client: %w", err)
 	}
 
-	return srv
+	return srv, nil
 }

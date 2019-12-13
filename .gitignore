@@ -3,3 +3,5 @@
 .idea/
 coverage.out
 config.go
+youtube_token.json
+drive_token.json

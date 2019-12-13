@@ -5,253 +5,221 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
+	"text/template"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/youtube/v3"
 )
 
-const ApiLimit = 10
 const ApiParts = "snippet,localizations,status"
 
 var filenameRegex = regexp.MustCompile(`^D([0-9]{3}).*$`)
 
+var titleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} | Great Himalaya Trail | Day {{ .Day }}`))
+
+var descriptionTemplate = template.Must(template.New("main").Parse(`Great Himalaya Trail - Day {{ .Day }} - {{ .DateString }} in the {{ .Section }} Section.
+
+{{ if .To }}Today we hiked from {{ .From }} ({{ .FromLocal }}) to {{ .To }} ({{ .ToLocal }}){{ end -}}
+{{- if .Pass }} via {{ .Pass }} ({{ .PassLocal }}){{ end -}}
+{{- if .SecondPass }} and {{ .SecondPass }} ({{ .SecondLocal }}){{ end -}}
+{{- if .End }} {{ .End }}{{ end -}}
+{{- if .To }}.{{ end }}
+
+=== The Great Himalaya Trail ===
+
+From April to September 2019 Mathi and Dave thru-hiked the {{ .TotalLocal }} Great Himalaya Trail.
+
+The concept of the Great Himalaya Trail is to follow the highest elevation continuous hiking route across the Himalayas. The Nepal section stretches for 1,400km from Kanchenjunga in the east to Humla in the west. It winds through the mountains with an average elevation of 3,750m, and up to 6,200m. Originally conceived and mapped by Robin Boustead, the route includes parts of the more commercialised treks, linking them together with sections that are so remote even the locals seldom hike there. 
+
+=== Get Involved ===
+
+If you would like to do the GHT yourself, join my WhatsApp group: https://chat.whatsapp.com/D5kC4kBc7SALDE8WctMmrH
+
+More info about my preparation for the trek: https://www.wildernessprime.com/expeditions/great-himalaya-trail/ 
+
+Our logistics were arranged by Narayan at Mac Trek: http://www.mactreks.com/
+
+Music in this episode by Blue Dot Sessions: https://www.sessions.blue/
+
+=== Index ===
+
+{{ .Index }}
+
+`))
+
+func titleCase(s string) string {
+	return strings.Replace(strings.Title(strings.ToLower(s)), "'S", "'s", -1)
+}
+
+func isLocal() bool {
+	host, _ := os.Hostname()
+	return host == "Davids-MacBook.local"
+}
+
+func renderImages() {
+
+}
+
 func main() {
+	err := saveVideos(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
-	ctx := context.Background()
+func saveVideos(ctx context.Context) error {
 
-	driveService := getDriveService()
-
-	driveFiles := map[int]string{}
-
-	filesInFolder, err := driveService.Files.List().Q("'1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD' in parents").PageSize(200).Fields("nextPageToken, files(id, name)").Do()
-	handleError(err, "Unable to retrieve files")
-
-	fmt.Println("Files:")
-	if len(filesInFolder.Files) == 0 {
-		log.Fatalf("No files found")
-	} else {
-		for _, f := range filesInFolder.Files {
-			matches := filenameRegex.FindStringSubmatch(f.Name)
-			if len(matches) != 2 {
-				log.Fatalf("File with unknown filename: %v", f.Name)
-			} else {
-				day, err := strconv.Atoi(matches[1])
-				handleError(err, "Can't parse day number from "+f.Name)
-				fmt.Printf("Day: %d %s\n", day, f.Id)
-				driveFiles[day] = f.Id
-			}
-		}
+	daysOrdered, err := getDays()
+	if err != nil {
+		return fmt.Errorf("can't load days: %w", err)
 	}
 
-	ghtDataRaw, err := ioutil.ReadFile("./ght_data.json")
-	handleError(err, "Unable to read ght data")
-	var ghtData GhtData
-	err = json.Unmarshal(ghtDataRaw, &ghtData)
-	handleError(err, "Unable to parse ght data json")
+	daysByIndex := map[int]*GhtDay{}
+	for _, day := range daysOrdered {
+		daysByIndex[day.Day] = day
+	}
 
-	for _, v := range ghtData {
-		if v.From == "" {
-			continue
-		}
-		if driveFiles[v.Day] != "" {
-			v.DriveFileId = driveFiles[v.Day]
+	driveService, err := getDriveService(ctx)
+	if err != nil {
+		return fmt.Errorf("can't get drive service: %w", err)
+	}
+
+	files, err := getFilesInFolder(driveService, "1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD")
+	if err != nil {
+		return fmt.Errorf("getting files in folder: %w", err)
+	}
+	if len(files) != 125 {
+		return fmt.Errorf("should be 125 files in folder, but found %d", len(files))
+	}
+
+	for _, f := range files {
+		matches := filenameRegex.FindStringSubmatch(f.Name)
+		if len(matches) != 2 {
+			return fmt.Errorf("found file with unknown filename %q", f.Name)
 		} else {
-			log.Fatalf("Cant't find drive file for day %d", v.Day)
-		}
-		fmt.Printf("Day %d - %s %s\n", v.Day, v.DriveFileId, v.Title)
-	}
-
-	var videos []string
-
-	youtubeService := getYoutubeService(ctx)
-
-	var done bool
-	var pageToken string
-
-	for !done {
-
-		// Search for all the videos in this channel and make a list of their IDs
-		channelResponse, err := youtubeService.Search.List("id").Type("video").ForMine(true).PageToken(pageToken).Do()
-		handleError(err, "")
-
-		for _, v := range channelResponse.Items {
-			videos = append(videos, v.Id.VideoId)
-		}
-
-		pageToken = channelResponse.NextPageToken
-		if pageToken == "" {
-			done = true
-		}
-	}
-
-	fmt.Println("Videos:", len(videos))
-
-	ghtVideos := map[int]*youtube.Video{}
-
-	done, pageToken = false, ""
-
-	for !done {
-		// Get all these videos with the Videos API
-		videosResponse, err := youtubeService.Videos.List(ApiParts).Id(strings.Join(videos, ",")).PageToken(pageToken).Do()
-		handleError(err, "")
-
-		// Check for meta data on each video and ignore those without meta data
-		for _, v := range videosResponse.Items {
-			if v.Localizations == nil || v.Localizations["eo"].Title != "youtube-tool-meta-data" {
-				fmt.Println(v.Id, "skipped")
-				continue
+			dayNumber, err := strconv.Atoi(matches[1])
+			if err != nil {
+				return fmt.Errorf("parsing day number from %q: %w", f.Name, err)
 			}
-			fmt.Println(v.Id, "meta data:", v.Localizations["eo"].Title, v.Localizations["eo"].Description)
-			var meta Meta
-
-			err := json.Unmarshal([]byte(v.Localizations["eo"].Description), &meta)
-			handleError(err, fmt.Sprintf("Unable to unmarshal meta data for ID %s", v.Id))
-
-			if meta.Expedition == "ght" && meta.Type == "day" {
-				ghtVideos[meta.Key] = v
+			day := daysByIndex[dayNumber]
+			if day == nil {
+				return fmt.Errorf("no day number %d for file %q", dayNumber, f.Name)
 			}
-		}
-
-		pageToken = videosResponse.NextPageToken
-		if pageToken == "" {
-			done = true
+			day.DriveFile = f
+			day.DriveFileId = f.Id
 		}
 	}
 
-	type videosToUpdateItem struct {
-		*youtube.Video
-		Data *GhtDay
+	youtubeService, err := getYoutubeService(ctx)
+	if err != nil {
+		return fmt.Errorf("getting youtube service: %w", err)
 	}
-	var videosToUpdate []videosToUpdateItem
 
-	for k, dataItem := range ghtData {
-		if dataItem.From == "" {
+	videos, err := getVideos(youtubeService)
+	if err != nil {
+		return fmt.Errorf("getting videos: %w", err)
+	}
+
+	for _, day := range daysOrdered {
+		day.Video = videos[day.Day]
+	}
+
+	updateAllStrings(daysOrdered)
+
+	for _, day := range daysOrdered {
+		if day.From == "" {
 			continue
 		}
 
-		if k >= ApiLimit {
-			break
-		}
-
-		var v *youtube.Video
-
-		if ghtVideos[dataItem.Day] != nil {
-			// use existing video
-			v = ghtVideos[dataItem.Day]
-		} else {
+		if day.Video == nil {
 			// create new video
-			v = &youtube.Video{}
+			day.Video = &youtube.Video{}
 		}
 
 		// add data
-		if v.Snippet == nil {
-			v.Snippet = &youtube.VideoSnippet{}
+		if day.Video.Snippet == nil {
+			day.Video.Snippet = &youtube.VideoSnippet{}
 		}
-		v.Snippet.CategoryId = "19"
-		v.Snippet.ChannelId = "UCFDggPICIlCHp3iOWMYt8cg"
-		v.Snippet.DefaultAudioLanguage = "en"
-		v.Snippet.DefaultLanguage = "en"
-		v.Snippet.Description = "UPDATED"
-		v.Snippet.LiveBroadcastContent = "none"
-		v.Snippet.Title = dataItem.Title
+		day.Video.Snippet.CategoryId = "19"
+		day.Video.Snippet.ChannelId = "UCFDggPICIlCHp3iOWMYt8cg"
+		day.Video.Snippet.DefaultAudioLanguage = "en"
+		day.Video.Snippet.DefaultLanguage = "en"
+		day.Video.Snippet.LiveBroadcastContent = "none"
+		day.Video.Snippet.Description = day.FullDescription
+		day.Video.Snippet.Title = day.FullTitle
 
-		if v.Localizations == nil {
-			v.Localizations = map[string]youtube.VideoLocalization{}
+		if day.Video.Localizations == nil {
+			day.Video.Localizations = map[string]youtube.VideoLocalization{}
 		}
+
 		metaData := Meta{
 			Version:    1,
 			Expedition: "ght",
 			Type:       "day",
-			Key:        dataItem.Day,
+			Key:        day.Day,
 		}
-		b, err := json.Marshal(metaData)
-		handleError(err, "")
-		v.Localizations["eo"] = youtube.VideoLocalization{
+		metaDataBytes, err := json.Marshal(metaData)
+		if err != nil {
+			return fmt.Errorf("encoding youtube meta data json: %w", err)
+		}
+		day.Video.Localizations["eo"] = youtube.VideoLocalization{
 			Title:       "youtube-tool-meta-data",
-			Description: string(b),
-		}
-		if v.Status == nil {
-			v.Status = &youtube.VideoStatus{}
-			v.Status.PrivacyStatus = "private"
+			Description: string(metaDataBytes),
 		}
 
-		videosToUpdate = append(videosToUpdate, videosToUpdateItem{
-			Video: v,
-			Data:  dataItem,
-		})
+		day.Video.Localizations["en_US"] = youtube.VideoLocalization{
+			Title:       day.FullTitleUsa,
+			Description: day.FullDescriptionUsa,
+		}
+
+		if day.Video.Status == nil {
+			day.Video.Status = &youtube.VideoStatus{}
+			day.Video.Status.PrivacyStatus = "private"
+		}
+
 	}
 
-	for _, v := range videosToUpdate {
-		if v.Id == "" {
+	for _, day := range daysOrdered {
+		if day.Video == nil {
+			continue
+		}
+		if day.Video.Id == "" {
+
+			if isLocal() {
+				fmt.Printf("Skipping video insert (day %d) because of local execution\n", day.Day)
+				continue
+			}
+
 			// add video
-			fmt.Printf("Inserting video: %q\n", v.Snippet.Title)
-			call := youtubeService.Videos.Insert(ApiParts, v.Video)
+			fmt.Printf("Inserting video: %q\n", day.Video.Snippet.Title)
+			call := youtubeService.Videos.Insert(ApiParts, day.Video)
 
-			fmt.Println("downloading video", v.Data.DriveFileId)
-			download, err := driveService.Files.Get(v.Data.DriveFileId).Download()
-			handleError(err, "Unable to download video")
-
-			//file, err := os.Open("/Users/dave/Downloads/74354ACC-E7B0-4D9E-9B24-E293FEE166A7.MP4")
+			fmt.Println("Downloading video", day.DriveFileId)
+			download, err := driveService.Files.Get(day.DriveFileId).Download()
+			if err != nil {
+				return fmt.Errorf("downloading drive file: %w", err)
+			}
 			defer download.Body.Close()
-			handleError(err, "Unable to open video file")
 			_, err = call.Media(download.Body).Do()
-			handleError(err, "Unable to insert video")
+			if err != nil {
+				return fmt.Errorf("inserting video: %w", err)
+			}
 
 		} else {
 			// update video
-			fmt.Printf("Updating video: %q\n", v.Snippet.Title)
-			_, err := youtubeService.Videos.Update(ApiParts, v.Video).Do()
-			handleError(err, "Unable to update video")
+			fmt.Printf("Updating video: %q\n", day.Video.Snippet.Title)
+			_, err := youtubeService.Videos.Update(ApiParts, day.Video).Do()
+			if err != nil {
+				return fmt.Errorf("updating video: %w", err)
+			}
 		}
 	}
-
-	//v1 := vr.Items[0]
-	//fmt.Printf("%#v\n", v1.Snippet)
-	//v1.Snippet.Title = "Footpath demo"
-	//fmt.Printf("Localizations: %#v\n", v1.Localizations)
-	//if v1.Localizations == nil {
-	//	v1.Localizations = map[string]youtube.VideoLocalization{}
-	//}
-
-	//v1.Snippet.DefaultLanguage = "en"
-	//v1.Localizations["eo"] = youtube.VideoLocalization{Title: "foo", Description: "bar"}
-
-	//v2, err := service.Videos.Update("snippet,localizations", v1).Do()
-	//handleError(err, "")
-	//fmt.Printf("After update: %#v\n", v2.Snippet)
-	//fmt.Printf("After update loc: %#v\n", v2.Localizations)
-
-}
-
-type GhtData []*GhtDay
-
-type GhtDay struct {
-	Day          int
-	Date         time.Time
-	From         string
-	FromM        int
-	FromFt       int
-	To           string
-	ToM          int
-	ToFt         int
-	Pass         string
-	PassM        int
-	PassFt       int
-	SecondPass   string
-	SecondPassM  int
-	SecondPassFt int
-	End          string
-	Title        string
-	DayAndDate   string
-	Desc         string
-	Special      bool
-	DriveFileId  string
+	return nil
 }
 
 type Meta struct {
@@ -265,11 +233,7 @@ const missingClientSecretsMessage = `
 Please configure OAuth 2.0
 `
 
-func handleError(err error, message string) {
-	if message == "" {
-		message = "Error making API call"
-	}
-	if err != nil {
-		log.Fatalf(message+": %v", err.Error())
-	}
-}
+var suffixes = []string{"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th",
+	"th", "th", "th", "th", "th", "th", "th", "th", "th", "th",
+	"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th",
+	"th", "st"}

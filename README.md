@@ -14,7 +14,7 @@ gcloud config set project youtube-tool-260519
 
 ```
 ssh 167.71.128.132
-screen -r
+screen -d -r
 ```
 
 ### Disconnect
@@ -52,6 +52,9 @@ pico ~/.credentials/youtube_secret.json
 cd ~/go/src/youtube
 go get
 go run *.go
+
+# Initialise screen 
+screen -a
 
 ```
 
