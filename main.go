@@ -5,52 +5,26 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	_ "image/jpeg"
 	"log"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
-	"text/template"
 
 	"golang.org/x/net/context"
+	"google.golang.org/api/drive/v3"
 	"google.golang.org/api/youtube/v3"
 )
+
+const InsertVideos = false
+const UpdateOne = 0
+const UpdateThumbnails = false
+const UpdateDetails = true
 
 const ApiParts = "snippet,localizations,status"
 
 var filenameRegex = regexp.MustCompile(`^D([0-9]{3}).*$`)
-
-var titleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} | Great Himalaya Trail | Day {{ .Day }}`))
-
-var descriptionTemplate = template.Must(template.New("main").Parse(`Great Himalaya Trail - Day {{ .Day }} - {{ .DateString }} in the {{ .Section }} Section.
-
-{{ if .To }}Today we hiked from {{ .From }} ({{ .FromLocal }}) to {{ .To }} ({{ .ToLocal }}){{ end -}}
-{{- if .Pass }} via {{ .Pass }} ({{ .PassLocal }}){{ end -}}
-{{- if .SecondPass }} and {{ .SecondPass }} ({{ .SecondLocal }}){{ end -}}
-{{- if .End }} {{ .End }}{{ end -}}
-{{- if .To }}.{{ end }}
-
-=== The Great Himalaya Trail ===
-
-From April to September 2019 Mathi and Dave thru-hiked the {{ .TotalLocal }} Great Himalaya Trail.
-
-The concept of the Great Himalaya Trail is to follow the highest elevation continuous hiking route across the Himalayas. The Nepal section stretches for 1,400km from Kanchenjunga in the east to Humla in the west. It winds through the mountains with an average elevation of 3,750m, and up to 6,200m. Originally conceived and mapped by Robin Boustead, the route includes parts of the more commercialised treks, linking them together with sections that are so remote even the locals seldom hike there. 
-
-=== Get Involved ===
-
-If you would like to do the GHT yourself, join my WhatsApp group: https://chat.whatsapp.com/D5kC4kBc7SALDE8WctMmrH
-
-More info about my preparation for the trek: https://www.wildernessprime.com/expeditions/great-himalaya-trail/ 
-
-Our logistics were arranged by Narayan at Mac Trek: http://www.mactreks.com/
-
-Music in this episode by Blue Dot Sessions: https://www.sessions.blue/
-
-=== Index ===
-
-{{ .Index }}
-
-`))
 
 func titleCase(s string) string {
 	return strings.Replace(strings.Title(strings.ToLower(s)), "'S", "'s", -1)
@@ -59,10 +33,6 @@ func titleCase(s string) string {
 func isLocal() bool {
 	host, _ := os.Hostname()
 	return host == "Davids-MacBook.local"
-}
-
-func renderImages() {
-
 }
 
 func main() {
@@ -89,30 +59,42 @@ func saveVideos(ctx context.Context) error {
 		return fmt.Errorf("can't get drive service: %w", err)
 	}
 
-	files, err := getFilesInFolder(driveService, "1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD")
-	if err != nil {
-		return fmt.Errorf("getting files in folder: %w", err)
-	}
-	if len(files) != 125 {
-		return fmt.Errorf("should be 125 files in folder, but found %d", len(files))
-	}
-
-	for _, f := range files {
-		matches := filenameRegex.FindStringSubmatch(f.Name)
-		if len(matches) != 2 {
-			return fmt.Errorf("found file with unknown filename %q", f.Name)
-		} else {
-			dayNumber, err := strconv.Atoi(matches[1])
-			if err != nil {
-				return fmt.Errorf("parsing day number from %q: %w", f.Name, err)
-			}
-			day := daysByIndex[dayNumber]
-			if day == nil {
-				return fmt.Errorf("no day number %d for file %q", dayNumber, f.Name)
-			}
-			day.DriveFile = f
-			day.DriveFileId = f.Id
+	f := func(folder string, expected int, action func(day *GhtDay, file *drive.File)) error {
+		files, err := getFilesInFolder(driveService, folder)
+		if err != nil {
+			return fmt.Errorf("getting files in folder: %w", err)
 		}
+		if len(files) != expected {
+			return fmt.Errorf("should be %d files in folder, but found %d", expected, len(files))
+		}
+
+		for _, f := range files {
+			matches := filenameRegex.FindStringSubmatch(f.Name)
+			if len(matches) != 2 {
+				return fmt.Errorf("found file with unknown filename %q", f.Name)
+			} else {
+				dayNumber, err := strconv.Atoi(matches[1])
+				if err != nil {
+					return fmt.Errorf("parsing day number from %q: %w", f.Name, err)
+				}
+				if dayNumber == 0 {
+					// special case for trailer
+					continue
+				}
+				day := daysByIndex[dayNumber]
+				if day == nil {
+					return fmt.Errorf("no day number %d for file %q", dayNumber, f.Name)
+				}
+				action(day, f)
+			}
+		}
+		return nil
+	}
+	if err := f("1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD", 125, func(day *GhtDay, file *drive.File) { day.File = file }); err != nil {
+		return fmt.Errorf("getting video files from drive: %w", err)
+	}
+	if err := f("1xETuf-n2mRH0REoZp-eLXLn5bzRTe3pi", 126, func(day *GhtDay, file *drive.File) { day.Thumbnail = file }); err != nil {
+		return fmt.Errorf("getting thumbnail files from drive: %w", err)
 	}
 
 	youtubeService, err := getYoutubeService(ctx)
@@ -129,7 +111,9 @@ func saveVideos(ctx context.Context) error {
 		day.Video = videos[day.Day]
 	}
 
-	updateAllStrings(daysOrdered)
+	if err := updateAllStrings(daysOrdered); err != nil {
+		return fmt.Errorf("updating all strings: %w", err)
+	}
 
 	for _, day := range daysOrdered {
 		if day.From == "" {
@@ -184,38 +168,73 @@ func saveVideos(ctx context.Context) error {
 
 	}
 
+	if isLocal() {
+		fmt.Println("Length:", len(daysByIndex[31].FullDescriptionUsa))
+		fmt.Println(daysByIndex[31].FullDescriptionUsa)
+		fmt.Println("Skipping youtube operations because of local execution")
+		return nil
+	}
+
 	for _, day := range daysOrdered {
 		if day.Video == nil {
 			continue
 		}
 		if day.Video.Id == "" {
 
-			if isLocal() {
-				fmt.Printf("Skipping video insert (day %d) because of local execution\n", day.Day)
-				continue
-			}
+			// insert video
 
-			// add video
-			fmt.Printf("Inserting video: %q\n", day.Video.Snippet.Title)
-			call := youtubeService.Videos.Insert(ApiParts, day.Video)
+			if InsertVideos {
+				fmt.Printf("Inserting video: %q\n", day.Video.Snippet.Title)
+				call := youtubeService.Videos.Insert(ApiParts, day.Video)
 
-			fmt.Println("Downloading video", day.DriveFileId)
-			download, err := driveService.Files.Get(day.DriveFileId).Download()
-			if err != nil {
-				return fmt.Errorf("downloading drive file: %w", err)
-			}
-			defer download.Body.Close()
-			_, err = call.Media(download.Body).Do()
-			if err != nil {
-				return fmt.Errorf("inserting video: %w", err)
+				fmt.Println("Downloading video", day.File.Id)
+				download, err := driveService.Files.Get(day.File.Id).Download()
+				if err != nil {
+					return fmt.Errorf("downloading drive file: %w", err)
+				}
+				if _, err := call.Media(download.Body).Do(); err != nil {
+					download.Body.Close()
+					return fmt.Errorf("inserting video: %w", err)
+				}
+				download.Body.Close()
 			}
 
 		} else {
 			// update video
-			fmt.Printf("Updating video: %q\n", day.Video.Snippet.Title)
-			_, err := youtubeService.Videos.Update(ApiParts, day.Video).Do()
-			if err != nil {
-				return fmt.Errorf("updating video: %w", err)
+
+			if UpdateOne > 0 && UpdateOne != day.Day {
+				continue
+			}
+
+			if UpdateDetails {
+				fmt.Printf("Updating video: %q\n", day.Video.Snippet.Title)
+				_, err := youtubeService.Videos.Update(ApiParts, day.Video).Do()
+				if err != nil {
+					return fmt.Errorf("updating video: %w", err)
+				}
+			}
+
+			if UpdateThumbnails {
+				fmt.Println("Downloading thumbnail", day.Thumbnail.Id)
+				download, err := driveService.Files.Get(day.Thumbnail.Id).Download()
+				if err != nil {
+					return fmt.Errorf("downloading drive file: %w", err)
+				}
+				f, err := transformImage(day, download.Body)
+				if err != nil {
+					download.Body.Close()
+					return fmt.Errorf("transforming thumbnail: %w", err)
+				}
+				download.Body.Close()
+				//b, err := ioutil.ReadAll(f)
+				//if err != nil {
+				//	return fmt.Errorf("reading transformed thumbnail: %w", err)
+				//}
+				//fmt.Println(len(b))
+				//return nil
+				if _, err := youtubeService.Thumbnails.Set(day.Video.Id).Media(f).Do(); err != nil {
+					return fmt.Errorf("setting thumbnail: %w", err)
+				}
 			}
 		}
 	}

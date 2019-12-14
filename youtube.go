@@ -16,7 +16,7 @@ import (
 
 func getVideos(srv *youtube.Service) (map[int]*youtube.Video, error) {
 
-	var ids []string
+	var all []*youtube.Video
 
 	{
 		var done bool
@@ -24,17 +24,28 @@ func getVideos(srv *youtube.Service) (map[int]*youtube.Video, error) {
 
 		for !done {
 
+			var ids []string
+
 			// Search for all the videos in this channel and make a list of their IDs
-			response, err := srv.Search.List("id").Type("video").ForMine(true).PageToken(pageToken).Do()
+			searchResponse, err := srv.Search.List("id").Type("video").ForMine(true).PageToken(pageToken).Do()
 			if err != nil {
 				return nil, fmt.Errorf("youtube search list call: %w", err)
 			}
 
-			for _, v := range response.Items {
+			for _, v := range searchResponse.Items {
 				ids = append(ids, v.Id.VideoId)
 			}
 
-			pageToken = response.NextPageToken
+			videosResponse, err := srv.Videos.List(ApiParts).Id(strings.Join(ids, ",")).Do()
+			if err != nil {
+				return nil, fmt.Errorf("youtube videos list call: %w", err)
+			}
+
+			for _, v := range videosResponse.Items {
+				all = append(all, v)
+			}
+
+			pageToken = searchResponse.NextPageToken
 			if pageToken == "" {
 				done = true
 			}
@@ -43,38 +54,20 @@ func getVideos(srv *youtube.Service) (map[int]*youtube.Video, error) {
 
 	videos := map[int]*youtube.Video{}
 
-	{
-		var done bool
-		var pageToken string
+	// Check for meta data on each video and ignore those without meta data
+	for _, v := range all {
+		if v.Localizations == nil || v.Localizations["eo"].Title != "youtube-tool-meta-data" {
+			continue
+		}
 
-		for !done {
-			// Get all these videos with the Videos API
-			response, err := srv.Videos.List(ApiParts).Id(strings.Join(ids, ",")).PageToken(pageToken).Do()
-			if err != nil {
-				return nil, fmt.Errorf("youtube videos list call: %w", err)
-			}
+		var meta Meta
+		err := json.Unmarshal([]byte(v.Localizations["eo"].Description), &meta)
+		if err != nil {
+			return nil, fmt.Errorf("unmarshaling youtube meta data for ID %s: %w", v.Id, err)
+		}
 
-			// Check for meta data on each video and ignore those without meta data
-			for _, v := range response.Items {
-				if v.Localizations == nil || v.Localizations["eo"].Title != "youtube-tool-meta-data" {
-					continue
-				}
-
-				var meta Meta
-				err := json.Unmarshal([]byte(v.Localizations["eo"].Description), &meta)
-				if err != nil {
-					return nil, fmt.Errorf("unmarshaling youtube meta data for ID %s: %w", v.Id, err)
-				}
-
-				if meta.Expedition == "ght" && meta.Type == "day" {
-					videos[meta.Key] = v
-				}
-			}
-
-			pageToken = response.NextPageToken
-			if pageToken == "" {
-				done = true
-			}
+		if meta.Expedition == "ght" && meta.Type == "day" {
+			videos[meta.Key] = v
 		}
 	}
 
