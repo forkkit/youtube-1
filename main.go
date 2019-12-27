@@ -11,20 +11,28 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/drive/v3"
 	"google.golang.org/api/youtube/v3"
 )
 
-const InsertVideos = false
+const InsertVideos = true
 const UpdateOne = 0
 const UpdateThumbnails = false
-const UpdateDetails = true
-
+const UpdateDetails = false
+const ReorderPlaylist = false
 const ApiParts = "snippet,localizations,status"
+const PlaylistItemParts = "id,contentDetails,snippet"
+const Playlist = "PLiM-TFJI81R_wFGbxORblhNhmUAHHil5z"
+
+var StartTime = time.Date(2020, 3, 1, 21, 0, 0, 0, time.UTC)
 
 var filenameRegex = regexp.MustCompile(`^D([0-9]{3}).*$`)
+
+const thumbnailTestingImportDir = `/Users/dave/Downloads/thumbnails`
+const thumbnailTestingOutputDir = `/Users/dave/Downloads/thumbnails-out`
 
 func titleCase(s string) string {
 	return strings.Replace(strings.Title(strings.ToLower(s)), "'S", "'s", -1)
@@ -32,11 +40,16 @@ func titleCase(s string) string {
 
 func isLocal() bool {
 	host, _ := os.Hostname()
-	return host == "Davids-MacBook.local"
+	return host == "Davids-MacBook-Air.local"
 }
 
 func main() {
-	err := saveVideos(context.Background())
+	var err error
+	if isLocal() {
+		err = previewThumbnails(context.Background())
+	} else {
+		err = saveVideos(context.Background())
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -90,7 +103,7 @@ func saveVideos(ctx context.Context) error {
 		}
 		return nil
 	}
-	if err := f("1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD", 125, func(day *GhtDay, file *drive.File) { day.File = file }); err != nil {
+	if err := f("1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD", 126, func(day *GhtDay, file *drive.File) { day.File = file }); err != nil {
 		return fmt.Errorf("getting video files from drive: %w", err)
 	}
 	if err := f("1xETuf-n2mRH0REoZp-eLXLn5bzRTe3pi", 126, func(day *GhtDay, file *drive.File) { day.Thumbnail = file }); err != nil {
@@ -100,6 +113,11 @@ func saveVideos(ctx context.Context) error {
 	youtubeService, err := getYoutubeService(ctx)
 	if err != nil {
 		return fmt.Errorf("getting youtube service: %w", err)
+	}
+
+	playlistItems, err := getPlaylist(youtubeService)
+	if err != nil {
+		return fmt.Errorf("getting playlist items: %w", err)
 	}
 
 	videos, err := getVideos(youtubeService)
@@ -113,6 +131,31 @@ func saveVideos(ctx context.Context) error {
 
 	if err := updateAllStrings(daysOrdered); err != nil {
 		return fmt.Errorf("updating all strings: %w", err)
+	}
+
+	daysByVideoId := map[string]*GhtDay{}
+	for _, day := range daysOrdered {
+		if day.Video != nil {
+			daysByVideoId[day.Video.Id] = day
+		}
+	}
+
+	if ReorderPlaylist {
+		for _, item := range playlistItems {
+			day := daysByVideoId[item.ContentDetails.VideoId]
+			day.PlaylistItem = item
+			item.Snippet.Position = int64(day.Position)
+		}
+		for _, day := range daysOrdered {
+			if day.PlaylistItem == nil {
+				continue
+			}
+			fmt.Printf("Updating playlist item for day %d\n", day.Day)
+			_, err := youtubeService.PlaylistItems.Update(PlaylistItemParts, day.PlaylistItem).Do()
+			if err != nil {
+				return fmt.Errorf("updating playlist item: %w", err)
+			}
+		}
 	}
 
 	for _, day := range daysOrdered {
@@ -163,16 +206,9 @@ func saveVideos(ctx context.Context) error {
 
 		if day.Video.Status == nil {
 			day.Video.Status = &youtube.VideoStatus{}
-			day.Video.Status.PrivacyStatus = "private"
 		}
-
-	}
-
-	if isLocal() {
-		fmt.Println("Length:", len(daysByIndex[31].FullDescriptionUsa))
-		fmt.Println(daysByIndex[31].FullDescriptionUsa)
-		fmt.Println("Skipping youtube operations because of local execution")
-		return nil
+		day.Video.Status.PrivacyStatus = "private"
+		//day.Video.Status.PublishAt = "" //strings.TrimSuffix(day.LiveTime.Format(time.RFC3339), "Z") + ".0Z"
 	}
 
 	for _, day := range daysOrdered {
@@ -180,6 +216,10 @@ func saveVideos(ctx context.Context) error {
 			continue
 		}
 		if day.Video.Id == "" {
+
+			if UpdateOne > 0 && UpdateOne != day.Day {
+				continue
+			}
 
 			// insert video
 

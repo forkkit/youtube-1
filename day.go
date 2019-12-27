@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"text/template"
 	"time"
@@ -13,8 +14,6 @@ import (
 	drive "google.golang.org/api/drive/v3"
 	youtube "google.golang.org/api/youtube/v3"
 )
-
-const GhtPlaylist = "PLiM-TFJI81R9oS--j6cuT47yGRdd0EWv8"
 
 var titleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Great Himalaya Trail Day {{ .Day }}`))
 
@@ -56,6 +55,15 @@ func getDays() ([]*GhtDay, error) {
 	err = json.Unmarshal(raw, &days)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse ght data json: %w", err)
+	}
+	var i int
+	for _, day := range days {
+		if day.From == "" {
+			continue
+		}
+		day.Position = i
+		day.LiveTime = StartTime.Add(time.Duration(i*24) * time.Hour)
+		i++
 	}
 	return days, nil
 }
@@ -291,6 +299,7 @@ type GhtDay struct {
 	SecondLocal        string
 	End                string
 	Title              string
+	Short              string
 	Section            string
 	Rest               string
 	DayAndDate         string
@@ -298,10 +307,14 @@ type GhtDay struct {
 	Special            bool
 	File               *drive.File
 	Thumbnail          *drive.File
+	ThumbnailTesting   os.FileInfo
 	Video              *youtube.Video
 	DateString         string
 	FullTitle          string
 	FullDescription    string
 	FullTitleUsa       string
 	FullDescriptionUsa string
+	Position           int
+	LiveTime           time.Time
+	PlaylistItem       *youtube.PlaylistItem
 }

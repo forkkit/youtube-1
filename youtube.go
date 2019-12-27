@@ -14,6 +14,34 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
+func getPlaylist(srv *youtube.Service) ([]*youtube.PlaylistItem, error) {
+	var all []*youtube.PlaylistItem
+
+	{
+		var done bool
+		var pageToken string
+
+		for !done {
+
+			searchResponse, err := srv.PlaylistItems.List(PlaylistItemParts).PlaylistId(Playlist).PageToken(pageToken).Do()
+			if err != nil {
+				return nil, fmt.Errorf("youtube playlist item list call: %w", err)
+			}
+
+			for _, v := range searchResponse.Items {
+				all = append(all, v)
+			}
+
+			pageToken = searchResponse.NextPageToken
+			if pageToken == "" {
+				done = true
+			}
+		}
+	}
+
+	return all, nil
+}
+
 func getVideos(srv *youtube.Service) (map[int]*youtube.Video, error) {
 
 	var all []*youtube.Video
