@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -42,7 +43,7 @@ func getPlaylist(srv *youtube.Service) ([]*youtube.PlaylistItem, error) {
 	return all, nil
 }
 
-func getVideos(srv *youtube.Service) (map[int]*youtube.Video, error) {
+func getVideos(srv *youtube.Service, data []*VideoData) error {
 
 	var all []*youtube.Video
 
@@ -57,16 +58,16 @@ func getVideos(srv *youtube.Service) (map[int]*youtube.Video, error) {
 			// Search for all the videos in this channel and make a list of their IDs
 			searchResponse, err := srv.Search.List("id").Type("video").ForMine(true).PageToken(pageToken).Do()
 			if err != nil {
-				return nil, fmt.Errorf("youtube search list call: %w", err)
+				return fmt.Errorf("youtube search list call: %w", err)
 			}
 
 			for _, v := range searchResponse.Items {
 				ids = append(ids, v.Id.VideoId)
 			}
 
-			videosResponse, err := srv.Videos.List(ApiParts).Id(strings.Join(ids, ",")).Do()
+			videosResponse, err := srv.Videos.List(ApiPartsRead).Id(strings.Join(ids, ",")).Do()
 			if err != nil {
-				return nil, fmt.Errorf("youtube videos list call: %w", err)
+				return fmt.Errorf("youtube videos list call: %w", err)
 			}
 
 			for _, v := range videosResponse.Items {
@@ -80,26 +81,38 @@ func getVideos(srv *youtube.Service) (map[int]*youtube.Video, error) {
 		}
 	}
 
-	videos := map[int]*youtube.Video{}
-
 	// Check for meta data on each video and ignore those without meta data
 	for _, v := range all {
-		if v.Localizations == nil || v.Localizations["eo"].Title != "youtube-tool-meta-data" {
+		if v.FileDetails == nil {
 			continue
 		}
 
-		var meta Meta
-		err := json.Unmarshal([]byte(v.Localizations["eo"].Description), &meta)
+		metaUnmarshaled, err := base64.StdEncoding.DecodeString(v.FileDetails.FileName)
 		if err != nil {
-			return nil, fmt.Errorf("unmarshaling youtube meta data for ID %s: %w", v.Id, err)
+			continue // ignore the error - might be a video without metadata in filename
 		}
 
-		if meta.Expedition == "ght" && meta.Type == "day" {
-			videos[meta.Key] = v
+		var meta Meta
+		if err := json.Unmarshal(metaUnmarshaled, &meta); err != nil {
+			return fmt.Errorf("unmarshaling youtube meta data for ID %s: %w", v.Id, err)
 		}
+
+		var item *VideoData
+		for _, itm := range data {
+			if itm.Expedition == meta.Expedition && itm.Type == meta.Type && itm.Key == meta.Key {
+				item = itm
+				break
+			}
+		}
+
+		if item == nil {
+			return fmt.Errorf("can't find data item for video with expedition %s, type %s, key %d", meta.Expedition, meta.Type, meta.Key)
+		}
+
+		item.Video = v
 	}
 
-	return videos, nil
+	return nil
 }
 
 func getYoutubeService(ctx context.Context) (*youtube.Service, error) {

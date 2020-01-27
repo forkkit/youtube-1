@@ -1,7 +1,22 @@
 [
 	{
-		"Day": 1,
-		"Leg": 1,
+		"Key": 1,
+		"Expedition": "ght",
+		"Type": "trailer",
+		"HasVideo": true,
+		"Date": "2019-01-01T00:00:00.000Z",
+		"FromM": 0,
+		"FromFt": 0,
+		"ToM": 0,
+		"ToFt": 0,
+		"PassFt": 0,
+		"SecondPassFt": 0
+	},
+	{
+		"Key": 1,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-14T23:00:00.000Z",
 		"From": "TAPLEJUNG",
 		"FromM": 2410,
@@ -18,8 +33,10 @@
 		"Desc": "Taplejung 2,410 m / 7,900 ft\nto\nPhurumbu 1,680 m / 5,510 ft"
 	},
 	{
-		"Day": 2,
-		"Leg": 2,
+		"Key": 2,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-15T23:00:00.000Z",
 		"From": "PHURUMBU",
 		"FromM": 1680,
@@ -36,8 +53,10 @@
 		"Desc": "Phurumbu 1,680 m / 5,510 ft\nto\nChiruwa 1,270 m / 4,160 ft"
 	},
 	{
-		"Day": 3,
-		"Leg": 3,
+		"Key": 3,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-16T23:00:00.000Z",
 		"From": "CHIRUWA",
 		"FromM": 1270,
@@ -54,8 +73,10 @@
 		"Desc": "Chiruwa 1,270 m / 4,160 ft\nto\nSukethum 1,580 m / 5,180 ft"
 	},
 	{
-		"Day": 4,
-		"Leg": 4,
+		"Key": 4,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-17T23:00:00.000Z",
 		"From": "SUKETHUM",
 		"FromM": 1580,
@@ -72,8 +93,10 @@
 		"Desc": "Sukethum 1,580 m / 5,180 ft\nto\nAmiljosa 2,310 m / 7,570 ft"
 	},
 	{
-		"Day": 5,
-		"Leg": 5,
+		"Key": 5,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-18T23:00:00.000Z",
 		"From": "AMILJOSA",
 		"FromM": 2310,
@@ -90,7 +113,10 @@
 		"Desc": "Amiljosa 2,310 m / 7,570 ft\nto\nGyabla 2,730 m / 8,950 ft"
 	},
 	{
-		"Day": 6,
+		"Key": 6,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-04-19T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -102,8 +128,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 7,
-		"Leg": 6,
+		"Key": 7,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-20T23:00:00.000Z",
 		"From": "GYABLA",
 		"FromM": 2730,
@@ -120,8 +148,10 @@
 		"Desc": "Gyabla 2,730 m / 8,950 ft\nto\nGhunsa 3,600 m / 11,800 ft"
 	},
 	{
-		"Day": 8,
-		"Leg": 7,
+		"Key": 8,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-21T23:00:00.000Z",
 		"From": "GHUNSA",
 		"FromM": 3600,
@@ -131,14 +161,17 @@
 		"ToFt": 13200,
 		"PassFt": 0,
 		"SecondPassFt": 0,
-		"Short": "First day hking solo.",
-		"Title": "First day hking solo.",
+		"Short": "First day hiking solo.",
+		"Title": "First day hiking solo.",
 		"Section": "Kanchenjunga",
 		"DayAndDate": "Day 8 - April 22nd",
 		"Desc": "Ghunsa 3,600 m / 11,800 ft\nto\nKhangpachen 4,050 m / 13,200 ft"
 	},
 	{
-		"Day": 9,
+		"Key": 9,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-04-22T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -150,8 +183,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 10,
-		"Leg": 8,
+		"Key": 10,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-23T23:00:00.000Z",
 		"From": "KHANGPACHEN",
 		"FromM": 4050,
@@ -168,7 +203,10 @@
 		"Desc": "Khangpachen 4,050 m / 13,200 ft\nto\nLhonak 4,780 m / 15,600 ft"
 	},
 	{
-		"Day": 11,
+		"Key": 11,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-04-24T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -180,8 +218,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 12,
-		"Leg": 9,
+		"Key": 12,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-25T23:00:00.000Z",
 		"From": "LHONAK",
 		"FromM": 4780,
@@ -198,8 +238,10 @@
 		"Desc": "Lhonak 4,780 m / 15,600 ft\nto\nKanchenjunga Base Camp 5,140 m / 16,800 ft"
 	},
 	{
-		"Day": 13,
-		"Leg": "2019-11-10T00:00:00.000Z",
+		"Key": 13,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-26T23:00:00.000Z",
 		"From": "KANCHENJUNGA BASE CAMP",
 		"FromM": 5140,
@@ -216,8 +258,10 @@
 		"Desc": "Kanchenjunga Base Camp 5,140 m / 16,800 ft\nto\nKhangpachen 4,050 m / 13,200 ft"
 	},
 	{
-		"Day": 14,
-		"Leg": 12,
+		"Key": 14,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-27T23:00:00.000Z",
 		"From": "KHANGPACHEN",
 		"FromM": 4050,
@@ -234,7 +278,10 @@
 		"Desc": "Khangpachen 4,050 m / 13,200 ft\nto\nGhunsa 3,600 m / 11,800 ft"
 	},
 	{
-		"Day": 15,
+		"Key": 15,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-04-28T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -246,8 +293,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 16,
-		"Leg": 13,
+		"Key": 16,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-29T23:00:00.000Z",
 		"From": "GHUNSA",
 		"FromM": 3600,
@@ -264,8 +313,10 @@
 		"Desc": "Ghunsa 3,600 m / 11,800 ft\nto\nKharka 4,160 m / 13,600 ft"
 	},
 	{
-		"Day": 17,
-		"Leg": 14,
+		"Key": 17,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-04-30T23:00:00.000Z",
 		"From": "KHARKA",
 		"FromM": 4160,
@@ -282,8 +333,10 @@
 		"Desc": "Kharka 4,160 m / 13,600 ft\nto\nLangjong Kharka 3,730 m / 12,200 ft"
 	},
 	{
-		"Day": 18,
-		"Leg": 15,
+		"Key": 18,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-01T23:00:00.000Z",
 		"From": "LANGJONG KHARKA",
 		"FromM": 3730,
@@ -300,7 +353,10 @@
 		"Desc": "Langjong Kharka 3,730 m / 12,200 ft\nto\nOlangchun Gola 3,430 m / 11,200 ft"
 	},
 	{
-		"Day": 19,
+		"Key": 19,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-05-02T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -312,7 +368,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 20,
+		"Key": 20,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-05-03T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -324,8 +383,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 21,
-		"Leg": 16,
+		"Key": 21,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-04T23:00:00.000Z",
 		"From": "OLANGCHUN GOLA",
 		"FromM": 3430,
@@ -342,8 +403,10 @@
 		"Desc": "Olangchun Gola 3,430 m / 11,200 ft\nto\nPass Camp 4,450 m / 14,500 ft"
 	},
 	{
-		"Day": 22,
-		"Leg": 17,
+		"Key": 22,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-05T23:00:00.000Z",
 		"From": "PASS CAMP",
 		"FromM": 4450,
@@ -362,8 +425,10 @@
 		"Desc": "Pass Camp 4,450 m / 14,500 ft\nvia\nLumbha Sambha 5,160 m / 16,900 ft\nto\nThudam 3,560 m / 11,600 ft"
 	},
 	{
-		"Day": 23,
-		"Leg": 18,
+		"Key": 23,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-06T23:00:00.000Z",
 		"From": "THUDAM",
 		"FromM": 3560,
@@ -380,8 +445,10 @@
 		"Desc": "Thudam 3,560 m / 11,600 ft\nto\nJijibuk 2,700 m / 8,850 ft"
 	},
 	{
-		"Day": 24,
-		"Leg": 19,
+		"Key": 24,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-07T23:00:00.000Z",
 		"From": "JIJIBUK",
 		"FromM": 2700,
@@ -398,8 +465,10 @@
 		"Desc": "Jijibuk 2,700 m / 8,850 ft\nto\nLingham 2,220 m / 7,280 ft"
 	},
 	{
-		"Day": 25,
-		"Leg": 20,
+		"Key": 25,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-08T23:00:00.000Z",
 		"From": "LINGHAM",
 		"FromM": 2220,
@@ -416,7 +485,10 @@
 		"Desc": "Lingham 2,220 m / 7,280 ft\nto\nHongon 2,320 m / 7,610 ft"
 	},
 	{
-		"Day": 26,
+		"Key": 26,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-05-09T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -428,8 +500,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 27,
-		"Leg": 21,
+		"Key": 27,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-10T23:00:00.000Z",
 		"From": "HONGON",
 		"FromM": 2320,
@@ -446,8 +520,10 @@
 		"Desc": "Hongon 2,320 m / 7,610 ft\nto\nMolun Pokhari 3,950 m / 12,900 ft"
 	},
 	{
-		"Day": 28,
-		"Leg": 22,
+		"Key": 28,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-11T23:00:00.000Z",
 		"From": "MOLUN POKHARI",
 		"FromM": 3950,
@@ -464,7 +540,10 @@
 		"Desc": "Molun Pokhari 3,950 m / 12,900 ft\nto\nKhola Kharka 3,210 m / 10,500 ft"
 	},
 	{
-		"Day": 29,
+		"Key": 29,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-12T23:00:00.000Z",
 		"From": "KHOLA KHARKA",
 		"FromM": 3210,
@@ -479,7 +558,10 @@
 		"Desc": "Khola Kharka 3,210 m / 10,500 ft"
 	},
 	{
-		"Day": 30,
+		"Key": 30,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-13T23:00:00.000Z",
 		"From": "KHOLA KHARKA",
 		"FromM": 3210,
@@ -496,7 +578,10 @@
 		"Desc": "Khola Kharka 3,210 m / 10,500 ft\nto\nKhongma Danda 3,620 m / 11,800 ft"
 	},
 	{
-		"Day": 31,
+		"Key": 31,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-14T23:00:00.000Z",
 		"From": "KHONGMA DANDA",
 		"FromM": 3620,
@@ -513,7 +598,10 @@
 		"Desc": "Khongma Danda 3,620 m / 11,800 ft\nto\nDobate 3,850 m / 12,600 ft"
 	},
 	{
-		"Day": 32,
+		"Key": 32,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-15T23:00:00.000Z",
 		"From": "DOBATE",
 		"FromM": 3850,
@@ -530,7 +618,10 @@
 		"Desc": "Dobate 3,850 m / 12,600 ft\nto\nYangla Kharka 3,760 m / 12,300 ft"
 	},
 	{
-		"Day": 33,
+		"Key": 33,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-16T23:00:00.000Z",
 		"From": "YANGLA KHARKA",
 		"FromM": 3760,
@@ -547,7 +638,10 @@
 		"Desc": "Yangla Kharka 3,760 m / 12,300 ft\nto\nLangmale Kharka 4,410 m / 14,400 ft"
 	},
 	{
-		"Day": 34,
+		"Key": 34,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-17T23:00:00.000Z",
 		"From": "LANGMALE KHARKA",
 		"FromM": 4410,
@@ -564,7 +658,10 @@
 		"Desc": "Langmale Kharka 4,410 m / 14,400 ft\nto\nMakalu Base Camp 4,870 m / 15,900 ft"
 	},
 	{
-		"Day": 35,
+		"Key": 35,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-05-18T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -576,7 +673,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 36,
+		"Key": 36,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-19T23:00:00.000Z",
 		"From": "MAKALU BASE CAMP",
 		"FromM": 4870,
@@ -594,7 +694,10 @@
 		"Desc": "Makalu Base Camp 4,870 m / 15,900 ft\nto\nSwiss Base Camp 5,150 m / 16,800 ft\nand back"
 	},
 	{
-		"Day": 37,
+		"Key": 37,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-20T23:00:00.000Z",
 		"From": "MAKALU BASE CAMP",
 		"FromM": 4870,
@@ -611,7 +714,10 @@
 		"Desc": "Makalu Base Camp 4,870 m / 15,900 ft\nto\nSwiss Base Camp 5,150 m / 16,800 ft"
 	},
 	{
-		"Day": 38,
+		"Key": 38,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-21T23:00:00.000Z",
 		"From": "SWISS BASE CAMP",
 		"FromM": 5150,
@@ -628,7 +734,10 @@
 		"Desc": "Swiss Base Camp 5,150 m / 16,800 ft\nto\nSherpani Col High Camp 5,690 m / 18,600 ft"
 	},
 	{
-		"Day": 39,
+		"Key": 39,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-22T23:00:00.000Z",
 		"From": "SHERPANI COL HIGH CAMP",
 		"FromM": 5690,
@@ -649,7 +758,10 @@
 		"Desc": "Sherpani Col High Camp 5,690 m / 18,600 ft\nvia\nSherpani Col 6,190 m / 20,300 ft\nWest Col 6,140 m / 20,100 ft\nto\nBarnutse Base Camp 5,440 m / 17,800 ft"
 	},
 	{
-		"Day": 40,
+		"Key": 40,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-23T23:00:00.000Z",
 		"From": "BARNUTSE BASE CAMP",
 		"FromM": 5440,
@@ -666,7 +778,10 @@
 		"Desc": "Barnutse Base Camp 5,440 m / 17,800 ft\nto\nHunku Khola Camp 5,070 m / 16,600 ft"
 	},
 	{
-		"Day": 41,
+		"Key": 41,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-24T23:00:00.000Z",
 		"From": "HUNKU KHOLA CAMP",
 		"FromM": 5070,
@@ -683,7 +798,10 @@
 		"Desc": "Hunku Khola Camp 5,070 m / 16,600 ft\nto\nAmphu Labsta Base Camp 5,530 m / 18,100 ft"
 	},
 	{
-		"Day": 42,
+		"Key": 42,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-25T23:00:00.000Z",
 		"From": "AMPHU LABSTA BASE CAMP",
 		"FromM": 5530,
@@ -702,7 +820,10 @@
 		"Desc": "Amphu Labsta Base Camp 5,530 m / 18,100 ft\nvia\nAmphu Labsta 5,850 m / 19,100 ft\nto\nChhukung 4,730 m / 15,500 ft"
 	},
 	{
-		"Day": 43,
+		"Key": 43,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-26T23:00:00.000Z",
 		"From": "CHHUKUNG",
 		"FromM": 4730,
@@ -719,7 +840,10 @@
 		"Desc": "Chhukung 4,730 m / 15,500 ft\nto\nDingboche 4,410 m / 14,400 ft"
 	},
 	{
-		"Day": 44,
+		"Key": 44,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-05-27T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -731,7 +855,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 45,
+		"Key": 45,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-28T23:00:00.000Z",
 		"From": "DINGBOCHE",
 		"FromM": 4410,
@@ -748,7 +875,10 @@
 		"Desc": "Dingboche 4,410 m / 14,400 ft\nto\nDzongla 4,830 m / 15,800 ft"
 	},
 	{
-		"Day": 46,
+		"Key": 46,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-29T23:00:00.000Z",
 		"From": "DZONGLA",
 		"FromM": 4830,
@@ -767,7 +897,10 @@
 		"Desc": "Dzongla 4,830 m / 15,800 ft\nvia\nCho La 5,420 m / 17,700 ft\nto\nGokyo 4,790 m / 15,700 ft"
 	},
 	{
-		"Day": 47,
+		"Key": 47,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-30T23:00:00.000Z",
 		"From": "GOKYO",
 		"FromM": 4790,
@@ -782,7 +915,10 @@
 		"Desc": "Gokyo 4,790 m / 15,700 ft"
 	},
 	{
-		"Day": 48,
+		"Key": 48,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-05-31T23:00:00.000Z",
 		"From": "GOKYO",
 		"FromM": 4790,
@@ -799,7 +935,10 @@
 		"Desc": "Gokyo 4,790 m / 15,700 ft\nto\nCho Oyu Base Camp 5,160 m / 16,900 ft"
 	},
 	{
-		"Day": 49,
+		"Key": 49,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-01T23:00:00.000Z",
 		"From": "CHO OYU BASE CAMP",
 		"FromM": 5160,
@@ -816,7 +955,10 @@
 		"Desc": "Cho Oyu Base Camp 5,160 m / 16,900 ft\nto\nGokyo 4,790 m / 15,700 ft"
 	},
 	{
-		"Day": 50,
+		"Key": 50,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-02T23:00:00.000Z",
 		"From": "GOKYO",
 		"FromM": 4790,
@@ -835,7 +977,10 @@
 		"Desc": "Gokyo 4,790 m / 15,700 ft\nvia\nRenjo La 5,360 m / 17,500 ft\nto\nLumde 4,370 m / 14,300 ft"
 	},
 	{
-		"Day": 51,
+		"Key": 51,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-03T23:00:00.000Z",
 		"From": "LUMDE",
 		"FromM": 4370,
@@ -852,7 +997,10 @@
 		"Desc": "Lumde 4,370 m / 14,300 ft\nto\nThame 3,820 m / 12,500 ft"
 	},
 	{
-		"Day": 52,
+		"Key": 52,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-06-04T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -864,7 +1012,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 53,
+		"Key": 53,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-05T23:00:00.000Z",
 		"From": "THAME",
 		"FromM": 3820,
@@ -881,7 +1032,10 @@
 		"Desc": "Thame 3,820 m / 12,500 ft\nto\nThyangbo 4,310 m / 14,100 ft"
 	},
 	{
-		"Day": 54,
+		"Key": 54,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-06T23:00:00.000Z",
 		"From": "THYANGBO",
 		"FromM": 4310,
@@ -898,7 +1052,10 @@
 		"Desc": "Thyangbo 4,310 m / 14,100 ft\nto\nThame 3,820 m / 12,500 ft"
 	},
 	{
-		"Day": 55,
+		"Key": 55,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-07T23:00:00.000Z",
 		"From": "THAME",
 		"FromM": 3820,
@@ -915,7 +1072,10 @@
 		"Desc": "Thame 3,820 m / 12,500 ft\nto\nTashi Labsta High Camp 5,150 m / 16,800 ft"
 	},
 	{
-		"Day": 56,
+		"Key": 56,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-08T23:00:00.000Z",
 		"From": "TASHI LABSTA HIGH CAMP",
 		"FromM": 5150,
@@ -934,7 +1094,10 @@
 		"Desc": "Tashi Labsta High Camp 5,150 m / 16,800 ft\nvia\nTashi Labsta 5,760 m / 18,800 ft\nto\nGlacier Camp 4,740 m / 15,500 ft"
 	},
 	{
-		"Day": 57,
+		"Key": 57,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-09T23:00:00.000Z",
 		"From": "GLACIER CAMP",
 		"FromM": 4740,
@@ -945,13 +1108,16 @@
 		"PassFt": 0,
 		"SecondPassFt": 0,
 		"Short": "Miserable boulders.",
-		"Title": "Miserable boulders fields all day.",
+		"Title": "Miserable boulder fields all day.",
 		"Section": "Rolwaling",
 		"DayAndDate": "Day 57 - June 10th",
 		"Desc": "Glacier Camp 4,740 m / 15,500 ft\nto\nNa 4,820 m / 15,800 ft"
 	},
 	{
-		"Day": 58,
+		"Key": 58,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-10T23:00:00.000Z",
 		"From": "NA",
 		"FromM": 4820,
@@ -968,7 +1134,10 @@
 		"Desc": "Na 4,820 m / 15,800 ft\nto\nBeding 3,740 m / 12,200 ft"
 	},
 	{
-		"Day": 59,
+		"Key": 59,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-06-11T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -980,7 +1149,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 60,
+		"Key": 60,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-12T23:00:00.000Z",
 		"From": "BEDING",
 		"FromM": 3740,
@@ -997,7 +1169,10 @@
 		"Desc": "Beding 3,740 m / 12,200 ft\nto\nDokhang 2,790 m / 9,150 ft"
 	},
 	{
-		"Day": 61,
+		"Key": 61,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-13T23:00:00.000Z",
 		"From": "DOKHANG",
 		"FromM": 2790,
@@ -1014,7 +1189,10 @@
 		"Desc": "Dokhang 2,790 m / 9,150 ft\nto\nGonggar 1,250 m / 4,100 ft"
 	},
 	{
-		"Day": 62,
+		"Key": 62,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-14T23:00:00.000Z",
 		"From": "GONGGAR",
 		"FromM": 1250,
@@ -1031,7 +1209,10 @@
 		"Desc": "Gonggar 1,250 m / 4,100 ft\nto\nOlangdanda 2,040 m / 6,690 ft"
 	},
 	{
-		"Day": 63,
+		"Key": 63,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-15T23:00:00.000Z",
 		"From": "OLANGDANDA",
 		"FromM": 2040,
@@ -1048,7 +1229,10 @@
 		"Desc": "Olangdanda 2,040 m / 6,690 ft\nto\nLaduk 2,050 m / 6,720 ft"
 	},
 	{
-		"Day": 64,
+		"Key": 64,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-16T23:00:00.000Z",
 		"From": "LADUK",
 		"FromM": 2050,
@@ -1065,7 +1249,10 @@
 		"Desc": "Laduk 2,050 m / 6,720 ft\nto\nLoting 1,770 m / 5,800 ft"
 	},
 	{
-		"Day": 65,
+		"Key": 65,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-17T23:00:00.000Z",
 		"From": "LOTING",
 		"FromM": 1770,
@@ -1082,7 +1269,10 @@
 		"Desc": "Loting 1,770 m / 5,800 ft\nto\nBigu Gompa 2,520 m / 8,260 ft"
 	},
 	{
-		"Day": 66,
+		"Key": 66,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-06-18T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1094,7 +1284,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 67,
+		"Key": 67,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-19T23:00:00.000Z",
 		"From": "BIGU GOMPA",
 		"FromM": 2520,
@@ -1111,7 +1304,10 @@
 		"Desc": "Bigu Gompa 2,520 m / 8,260 ft\nto\nTinsang Kewa 3,280 m / 10,700 ft"
 	},
 	{
-		"Day": 68,
+		"Key": 68,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-20T23:00:00.000Z",
 		"From": "TINSANG KEWA",
 		"FromM": 3280,
@@ -1128,7 +1324,10 @@
 		"Desc": "Tinsang Kewa 3,280 m / 10,700 ft\nto\nMandre 2,060 m / 6,750 ft"
 	},
 	{
-		"Day": 69,
+		"Key": 69,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-21T23:00:00.000Z",
 		"From": "MANDRE",
 		"FromM": 2060,
@@ -1145,7 +1344,10 @@
 		"Desc": "Mandre 2,060 m / 6,750 ft\nto\nLast Resort 1,170 m / 3,830 ft"
 	},
 	{
-		"Day": 70,
+		"Key": 70,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-06-22T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1157,7 +1359,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 71,
+		"Key": 71,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-23T23:00:00.000Z",
 		"From": "LAST RESORT",
 		"FromM": 1170,
@@ -1174,7 +1379,10 @@
 		"Desc": "Last Resort 1,170 m / 3,830 ft\nto\nChagam 2,500 m / 8,200 ft"
 	},
 	{
-		"Day": 72,
+		"Key": 72,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-24T23:00:00.000Z",
 		"From": "CHAGAM",
 		"FromM": 2500,
@@ -1191,7 +1399,10 @@
 		"Desc": "Chagam 2,500 m / 8,200 ft\nto\nKyansin 2,520 m / 8,260 ft"
 	},
 	{
-		"Day": 73,
+		"Key": 73,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-25T23:00:00.000Z",
 		"From": "KYANSIN",
 		"FromM": 2520,
@@ -1208,7 +1419,10 @@
 		"Desc": "Kyansin 2,520 m / 8,260 ft\nto\nThepu 2,200 m / 7,210 ft"
 	},
 	{
-		"Day": 74,
+		"Key": 74,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-26T23:00:00.000Z",
 		"From": "THEPU",
 		"FromM": 2200,
@@ -1225,7 +1439,10 @@
 		"Desc": "Thepu 2,200 m / 7,210 ft\nto\nKharka 3,960 m / 12,900 ft"
 	},
 	{
-		"Day": 75,
+		"Key": 75,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-27T23:00:00.000Z",
 		"From": "KHARKA",
 		"FromM": 3960,
@@ -1242,7 +1459,10 @@
 		"Desc": "Kharka 3,960 m / 12,900 ft\nto\nPanch Pokhari 4,070 m / 13,300 ft"
 	},
 	{
-		"Day": 76,
+		"Key": 76,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-28T23:00:00.000Z",
 		"From": "PANCH POKHARI",
 		"FromM": 4070,
@@ -1259,7 +1479,10 @@
 		"Desc": "Panch Pokhari 4,070 m / 13,300 ft\nto\nTin Pokhari 4,250 m / 13,900 ft"
 	},
 	{
-		"Day": 77,
+		"Key": 77,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-29T23:00:00.000Z",
 		"From": "TIN POKHARI",
 		"FromM": 4250,
@@ -1276,7 +1499,10 @@
 		"Desc": "Tin Pokhari 4,250 m / 13,900 ft\nto\nHigh Camp South 4,980 m / 16,300 ft"
 	},
 	{
-		"Day": 78,
+		"Key": 78,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-06-30T23:00:00.000Z",
 		"From": "HIGH CAMP SOUTH",
 		"FromM": 4980,
@@ -1296,7 +1522,10 @@
 		"Special": true
 	},
 	{
-		"Day": 79,
+		"Key": 79,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-01T23:00:00.000Z",
 		"From": "KHARKA",
 		"FromM": 4540,
@@ -1313,7 +1542,10 @@
 		"Desc": "Kharka 4,540 m / 14,800 ft\nto\nLangshisa Kharka 4,120 m / 13,500 ft"
 	},
 	{
-		"Day": 80,
+		"Key": 80,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-02T23:00:00.000Z",
 		"From": "LANGSHISA KHARKA",
 		"FromM": 4120,
@@ -1330,7 +1562,10 @@
 		"Desc": "Langshisa Kharka 4,120 m / 13,500 ft\nto\nKyangjin Gompa 3,880 m / 12,700 ft"
 	},
 	{
-		"Day": 81,
+		"Key": 81,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-03T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1342,7 +1577,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 82,
+		"Key": 82,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-04T23:00:00.000Z",
 		"From": "KYANGJIN GOMPA",
 		"FromM": 3880,
@@ -1359,7 +1597,10 @@
 		"Desc": "Kyangjin Gompa 3,880 m / 12,700 ft\nto\nChangdam 2,560 m / 8,390 ft"
 	},
 	{
-		"Day": 83,
+		"Key": 83,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-05T23:00:00.000Z",
 		"From": "CHANGDAM",
 		"FromM": 2560,
@@ -1376,7 +1617,10 @@
 		"Desc": "Changdam 2,560 m / 8,390 ft\nto\nSyabru Besi 1,500 m / 4,920 ft"
 	},
 	{
-		"Day": 84,
+		"Key": 84,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-06T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1388,7 +1632,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 85,
+		"Key": 85,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-07T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1400,7 +1647,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 86,
+		"Key": 86,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-08T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1412,7 +1662,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 87,
+		"Key": 87,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-09T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1424,7 +1677,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 88,
+		"Key": 88,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-10T23:00:00.000Z",
 		"From": "SYABRU BESI",
 		"FromM": 1500,
@@ -1441,7 +1697,10 @@
 		"Desc": "Syabru Besi 1,500 m / 4,920 ft\nto\nGatlang 2,230 m / 7,310 ft"
 	},
 	{
-		"Day": 89,
+		"Key": 89,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-11T23:00:00.000Z",
 		"From": "GATLANG",
 		"FromM": 2230,
@@ -1458,7 +1717,10 @@
 		"Desc": "Gatlang 2,230 m / 7,310 ft\nto\nSomdang 3,260 m / 10,600 ft"
 	},
 	{
-		"Day": 90,
+		"Key": 90,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-12T23:00:00.000Z",
 		"From": "SOMDANG",
 		"FromM": 3260,
@@ -1475,7 +1737,10 @@
 		"Desc": "Somdang 3,260 m / 10,600 ft\nto\nTipling 1,890 m / 6,200 ft"
 	},
 	{
-		"Day": 91,
+		"Key": 91,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-13T23:00:00.000Z",
 		"From": "TIPLING",
 		"FromM": 1890,
@@ -1492,7 +1757,10 @@
 		"Desc": "Tipling 1,890 m / 6,200 ft\nto\nBorang 1,540 m / 5,050 ft"
 	},
 	{
-		"Day": 92,
+		"Key": 92,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-14T23:00:00.000Z",
 		"From": "BORANG",
 		"FromM": 1540,
@@ -1509,7 +1777,10 @@
 		"Desc": "Borang 1,540 m / 5,050 ft\nto\nLapagaon 1,290 m / 4,230 ft"
 	},
 	{
-		"Day": 93,
+		"Key": 93,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-15T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1521,7 +1792,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 94,
+		"Key": 94,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-16T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1533,7 +1807,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 95,
+		"Key": 95,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-17T23:00:00.000Z",
 		"From": "LAPAGAON",
 		"FromM": 1290,
@@ -1550,7 +1827,10 @@
 		"Desc": "Lapagaon 1,290 m / 4,230 ft\nto\nMyangal Kharka 2,910 m / 9,540 ft"
 	},
 	{
-		"Day": 96,
+		"Key": 96,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-18T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1562,7 +1842,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 97,
+		"Key": 97,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-19T23:00:00.000Z",
 		"From": "MYANGAL KHARKA",
 		"FromM": 2910,
@@ -1579,7 +1862,10 @@
 		"Desc": "Myangal Kharka 2,910 m / 9,540 ft\nto\nDharot 1,480 m / 4,850 ft"
 	},
 	{
-		"Day": 98,
+		"Key": 98,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-20T23:00:00.000Z",
 		"From": "DHAROT",
 		"FromM": 1480,
@@ -1596,7 +1882,10 @@
 		"Desc": "Dharot 1,480 m / 4,850 ft\nto\nKashigaun 1,890 m / 6,200 ft"
 	},
 	{
-		"Day": 99,
+		"Key": 99,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-21T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1608,7 +1897,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 100,
+		"Key": 100,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-22T23:00:00.000Z",
 		"From": "KASHIGAUN",
 		"FromM": 1890,
@@ -1625,7 +1917,10 @@
 		"Desc": "Kashigaun 1,890 m / 6,200 ft\nto\nKhorlabesi 870 m / 2,850 ft"
 	},
 	{
-		"Day": 101,
+		"Key": 101,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-23T23:00:00.000Z",
 		"From": "KHORLABESI",
 		"FromM": 870,
@@ -1642,7 +1937,10 @@
 		"Desc": "Khorlabesi 870 m / 2,850 ft\nto\nJagat 1,340 m / 4,390 ft"
 	},
 	{
-		"Day": 102,
+		"Key": 102,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-07-24T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1654,7 +1952,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 103,
+		"Key": 103,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-25T23:00:00.000Z",
 		"From": "JAGAT",
 		"FromM": 1340,
@@ -1669,7 +1970,10 @@
 		"Desc": "Jagat 1,340 m / 4,390 ft"
 	},
 	{
-		"Day": 104,
+		"Key": 104,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-26T23:00:00.000Z",
 		"From": "JAGAT",
 		"FromM": 1340,
@@ -1686,7 +1990,10 @@
 		"Desc": "Jagat 1,340 m / 4,390 ft\nto\nDeng 1,860 m / 6,100 ft"
 	},
 	{
-		"Day": 105,
+		"Key": 105,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-27T23:00:00.000Z",
 		"From": "DENG",
 		"FromM": 1860,
@@ -1703,7 +2010,10 @@
 		"Desc": "Deng 1,860 m / 6,100 ft\nto\nNamrung 2,630 m / 8,620 ft"
 	},
 	{
-		"Day": 106,
+		"Key": 106,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-28T23:00:00.000Z",
 		"From": "NAMRUNG",
 		"FromM": 2630,
@@ -1720,7 +2030,10 @@
 		"Desc": "Namrung 2,630 m / 8,620 ft\nto\nSama 3,520 m / 11,500 ft"
 	},
 	{
-		"Day": 107,
+		"Key": 107,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-29T23:00:00.000Z",
 		"From": "SAMA",
 		"FromM": 3520,
@@ -1737,7 +2050,10 @@
 		"Desc": "Sama 3,520 m / 11,500 ft\nto\nSamdo 3,870 m / 12,600 ft"
 	},
 	{
-		"Day": 108,
+		"Key": 108,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-30T23:00:00.000Z",
 		"From": "SAMDO",
 		"FromM": 3870,
@@ -1756,7 +2072,10 @@
 		"Desc": "Samdo 3,870 m / 12,600 ft\nvia\nLarkya La 5,160 m / 16,900 ft\nto\nBimtang 3,590 m / 11,700 ft"
 	},
 	{
-		"Day": 109,
+		"Key": 109,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-07-31T23:00:00.000Z",
 		"From": "BIMTANG",
 		"FromM": 3590,
@@ -1773,7 +2092,10 @@
 		"Desc": "Bimtang 3,590 m / 11,700 ft\nto\nTilche 2,280 m / 7,480 ft"
 	},
 	{
-		"Day": 110,
+		"Key": 110,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-01T23:00:00.000Z",
 		"From": "TILCHE",
 		"FromM": 2280,
@@ -1790,7 +2112,10 @@
 		"Desc": "Tilche 2,280 m / 7,480 ft\nto\nTimang 2,600 m / 8,530 ft"
 	},
 	{
-		"Day": 111,
+		"Key": 111,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-02T23:00:00.000Z",
 		"From": "TIMANG",
 		"FromM": 2600,
@@ -1807,7 +2132,10 @@
 		"Desc": "Timang 2,600 m / 8,530 ft\nto\nBratang 2,910 m / 9,540 ft"
 	},
 	{
-		"Day": 112,
+		"Key": 112,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-03T23:00:00.000Z",
 		"From": "BRATANG",
 		"FromM": 2910,
@@ -1824,7 +2152,10 @@
 		"Desc": "Bratang 2,910 m / 9,540 ft\nto\nUpper Pisang 3,280 m / 10,700 ft"
 	},
 	{
-		"Day": 113,
+		"Key": 113,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-04T23:00:00.000Z",
 		"From": "UPPER PISANG",
 		"FromM": 3280,
@@ -1841,7 +2172,10 @@
 		"Desc": "Upper Pisang 3,280 m / 10,700 ft\nto\nManang 3,540 m / 11,600 ft"
 	},
 	{
-		"Day": 114,
+		"Key": 114,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-08-05T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1853,7 +2187,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 115,
+		"Key": 115,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-06T23:00:00.000Z",
 		"From": "MANANG",
 		"FromM": 3540,
@@ -1870,7 +2207,10 @@
 		"Desc": "Manang 3,540 m / 11,600 ft\nto\nTilicho Lake Base Camp 4,140 m / 13,500 ft"
 	},
 	{
-		"Day": 116,
+		"Key": 116,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-07T23:00:00.000Z",
 		"From": "TILICHO LAKE BASE CAMP",
 		"FromM": 4140,
@@ -1887,7 +2227,10 @@
 		"Desc": "Tilicho Lake Base Camp 4,140 m / 13,500 ft\nto\nTilicho Lake Viewpoint 5,000 m / 16,400 ft"
 	},
 	{
-		"Day": 117,
+		"Key": 117,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-08T23:00:00.000Z",
 		"From": "TILICHO LAKE VIEWPOINT",
 		"FromM": 5000,
@@ -1908,7 +2251,10 @@
 		"Desc": "Tilicho Lake Viewpoint 5,000 m / 16,400 ft\nvia\nTilicho East 5,340 m / 17,500 ft\nMesokanto La 5,250 m / 17,200 ft\nto\nNamu Kharka 4,180 m / 13,700 ft"
 	},
 	{
-		"Day": 118,
+		"Key": 118,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-09T23:00:00.000Z",
 		"From": "NAMU KHARKA",
 		"FromM": 4180,
@@ -1925,7 +2271,10 @@
 		"Desc": "Namu Kharka 4,180 m / 13,700 ft\nto\nKagbeni 2,810 m / 9,210 ft"
 	},
 	{
-		"Day": 119,
+		"Key": 119,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-08-10T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -1937,7 +2286,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 120,
+		"Key": 120,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-11T23:00:00.000Z",
 		"From": "KAGBENI",
 		"FromM": 2810,
@@ -1954,7 +2306,10 @@
 		"Desc": "Kagbeni 2,810 m / 9,210 ft\nto\nSanta 3,780 m / 12,400 ft"
 	},
 	{
-		"Day": 121,
+		"Key": 121,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-12T23:00:00.000Z",
 		"From": "SANTA",
 		"FromM": 3780,
@@ -1971,7 +2326,10 @@
 		"Desc": "Santa 3,780 m / 12,400 ft\nto\nGhalden Ghuldun Khola 4,250 m / 13,900 ft"
 	},
 	{
-		"Day": 122,
+		"Key": 122,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-13T23:00:00.000Z",
 		"From": "GHALDEN GHULDUN KHOLA",
 		"FromM": 4250,
@@ -1988,7 +2346,10 @@
 		"Desc": "Ghalden Ghuldun Khola 4,250 m / 13,900 ft\nto\nSangda Phedi 5,130 m / 16,800 ft"
 	},
 	{
-		"Day": 123,
+		"Key": 123,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-14T23:00:00.000Z",
 		"From": "SANGDA PHEDI",
 		"FromM": 5130,
@@ -2009,7 +2370,10 @@
 		"Desc": "Sangda Phedi 5,130 m / 16,800 ft\nvia\nJungben La 5,550 m / 18,200 ft\nNiwas La 5,120 m / 16,700 ft\nto\nYalku Khola Kharka 4,760 m / 15,600 ft"
 	},
 	{
-		"Day": 124,
+		"Key": 124,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-15T23:00:00.000Z",
 		"From": "YALKU KHOLA KHARKA",
 		"FromM": 4760,
@@ -2028,7 +2392,10 @@
 		"Desc": "Yalku Khola Kharka 4,760 m / 15,600 ft\nvia\nSime La 5,310 m / 17,400 ft\nto\nSipalun Kharka 5,210 m / 17,000 ft"
 	},
 	{
-		"Day": 125,
+		"Key": 125,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-16T23:00:00.000Z",
 		"From": "SIPALUN KHARKA",
 		"FromM": 5210,
@@ -2045,7 +2412,10 @@
 		"Desc": "Sipalun Kharka 5,210 m / 17,000 ft\nto\nThinmer 4,030 m / 13,200 ft"
 	},
 	{
-		"Day": 126,
+		"Key": 126,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-17T23:00:00.000Z",
 		"From": "THINMER",
 		"FromM": 4030,
@@ -2062,7 +2432,10 @@
 		"Desc": "Thinmer 4,030 m / 13,200 ft\nto\nChap Chu 4,340 m / 14,200 ft"
 	},
 	{
-		"Day": 127,
+		"Key": 127,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-18T23:00:00.000Z",
 		"From": "CHAP CHU",
 		"FromM": 4340,
@@ -2081,7 +2454,10 @@
 		"Desc": "Chap Chu 4,340 m / 14,200 ft\nvia\nChan La 5,380 m / 17,600 ft\nto\nDho Tarap 3,940 m / 12,900 ft"
 	},
 	{
-		"Day": 128,
+		"Key": 128,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-08-19T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -2093,7 +2469,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 129,
+		"Key": 129,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-20T23:00:00.000Z",
 		"From": "DHO TARAP",
 		"FromM": 3940,
@@ -2112,7 +2491,10 @@
 		"Desc": "Dho Tarap 3,940 m / 12,900 ft\nvia\nNuma La 5,310 m / 17,400 ft\nto\nDanigar 4,500 m / 14,700 ft"
 	},
 	{
-		"Day": 130,
+		"Key": 130,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-21T23:00:00.000Z",
 		"From": "DANIGAR",
 		"FromM": 4500,
@@ -2131,7 +2513,10 @@
 		"Desc": "Danigar 4,500 m / 14,700 ft\nvia\nBaga La 5,170 m / 16,900 ft\nto\nRingmo 3,640 m / 11,900 ft"
 	},
 	{
-		"Day": 131,
+		"Key": 131,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-22T23:00:00.000Z",
 		"From": "RINGMO",
 		"FromM": 3640,
@@ -2148,7 +2533,10 @@
 		"Desc": "Ringmo 3,640 m / 11,900 ft\nto\nPhoksundo Khola Camp 3,630 m / 11,900 ft"
 	},
 	{
-		"Day": 132,
+		"Key": 132,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-23T23:00:00.000Z",
 		"From": "PHOKSUNDO KHOLA CAMP",
 		"FromM": 3630,
@@ -2165,7 +2553,10 @@
 		"Desc": "Phoksundo Khola Camp 3,630 m / 11,900 ft\nto\nPass Camp 4,640 m / 15,200 ft"
 	},
 	{
-		"Day": 133,
+		"Key": 133,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-24T23:00:00.000Z",
 		"From": "PASS CAMP",
 		"FromM": 4640,
@@ -2184,7 +2575,10 @@
 		"Desc": "Pass Camp 4,640 m / 15,200 ft\nvia\nNagdala La 5,350 m / 17,500 ft\nto\nShey Gompa 4,340 m / 14,200 ft"
 	},
 	{
-		"Day": 134,
+		"Key": 134,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-25T23:00:00.000Z",
 		"From": "SHEY GOMPA",
 		"FromM": 4340,
@@ -2201,7 +2595,10 @@
 		"Desc": "Shey Gompa 4,340 m / 14,200 ft\nto\nBhijer 3,850 m / 12,600 ft"
 	},
 	{
-		"Day": 135,
+		"Key": 135,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-08-26T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -2213,7 +2610,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 136,
+		"Key": 136,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-27T23:00:00.000Z",
 		"From": "BHIJER",
 		"FromM": 3850,
@@ -2230,7 +2630,10 @@
 		"Desc": "Bhijer 3,850 m / 12,600 ft\nto\nPho 4,090 m / 13,400 ft"
 	},
 	{
-		"Day": 137,
+		"Key": 137,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-28T23:00:00.000Z",
 		"From": "PHO",
 		"FromM": 4090,
@@ -2249,7 +2652,10 @@
 		"Desc": "Pho 4,090 m / 13,400 ft\nvia\nNyingma Gyanzen La 5,570 m / 18,200 ft\nto\nPhung Kharka 4,650 m / 15,200 ft"
 	},
 	{
-		"Day": 138,
+		"Key": 138,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-29T23:00:00.000Z",
 		"From": "PHUNG KHARKA",
 		"FromM": 4650,
@@ -2268,7 +2674,10 @@
 		"Desc": "Phung Kharka 4,650 m / 15,200 ft\nvia\nYala La 5,410 m / 17,700 ft\nto\nChyandi Khola 4,830 m / 15,800 ft"
 	},
 	{
-		"Day": 139,
+		"Key": 139,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-30T23:00:00.000Z",
 		"From": "CHYANDI KHOLA",
 		"FromM": 4830,
@@ -2285,7 +2694,10 @@
 		"Desc": "Chyandi Khola 4,830 m / 15,800 ft\nto\nKaitpuchonam Khola 4,020 m / 13,100 ft"
 	},
 	{
-		"Day": 140,
+		"Key": 140,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-08-31T23:00:00.000Z",
 		"From": "KAITPUCHONAM KHOLA",
 		"FromM": 4020,
@@ -2302,7 +2714,10 @@
 		"Desc": "Kaitpuchonam Khola 4,020 m / 13,100 ft\nto\nTakla Khola 3,790 m / 12,400 ft"
 	},
 	{
-		"Day": 141,
+		"Key": 141,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-01T23:00:00.000Z",
 		"From": "TAKLA KHOLA",
 		"FromM": 3790,
@@ -2321,7 +2736,10 @@
 		"Desc": "Takla Khola 3,790 m / 12,400 ft\nvia\nChyargo La 5,150 m / 16,800 ft\nto\nThajuchaur 4,050 m / 13,200 ft"
 	},
 	{
-		"Day": 142,
+		"Key": 142,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-02T23:00:00.000Z",
 		"From": "THAJUCHAUR",
 		"FromM": 4050,
@@ -2338,7 +2756,10 @@
 		"Desc": "Thajuchaur 4,050 m / 13,200 ft\nto\nChhewathan 2,250 m / 7,380 ft"
 	},
 	{
-		"Day": 143,
+		"Key": 143,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-03T23:00:00.000Z",
 		"From": "CHHEWATHAN",
 		"FromM": 2250,
@@ -2355,7 +2776,10 @@
 		"Desc": "Chhewathan 2,250 m / 7,380 ft\nto\nGamgadhi 2,100 m / 6,880 ft"
 	},
 	{
-		"Day": 144,
+		"Key": 144,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-09-04T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -2367,7 +2791,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 145,
+		"Key": 145,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-05T23:00:00.000Z",
 		"From": "GAMGADHI",
 		"FromM": 2100,
@@ -2384,7 +2811,10 @@
 		"Desc": "Gamgadhi 2,100 m / 6,880 ft\nto\nDharke Khola 2,750 m / 9,020 ft"
 	},
 	{
-		"Day": 146,
+		"Key": 146,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-06T23:00:00.000Z",
 		"From": "DHARKE KHOLA",
 		"FromM": 2750,
@@ -2401,7 +2831,10 @@
 		"Desc": "Dharke Khola 2,750 m / 9,020 ft\nto\nRimi 2,550 m / 8,360 ft"
 	},
 	{
-		"Day": 147,
+		"Key": 147,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-07T23:00:00.000Z",
 		"From": "RIMI",
 		"FromM": 2550,
@@ -2418,7 +2851,10 @@
 		"Desc": "Rimi 2,550 m / 8,360 ft\nto\nMelcham 2,550 m / 8,360 ft"
 	},
 	{
-		"Day": 148,
+		"Key": 148,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-08T23:00:00.000Z",
 		"From": "MELCHAM",
 		"FromM": 2550,
@@ -2435,7 +2871,10 @@
 		"Desc": "Melcham 2,550 m / 8,360 ft\nto\nPunkha Khola 2,450 m / 8,030 ft"
 	},
 	{
-		"Day": 149,
+		"Key": 149,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-09T23:00:00.000Z",
 		"From": "PUNKHA KHOLA",
 		"FromM": 2450,
@@ -2452,7 +2891,10 @@
 		"Desc": "Punkha Khola 2,450 m / 8,030 ft\nto\nRiver Camp 2,970 m / 9,740 ft"
 	},
 	{
-		"Day": 150,
+		"Key": 150,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-10T23:00:00.000Z",
 		"From": "RIVER CAMP",
 		"FromM": 2970,
@@ -2469,7 +2911,10 @@
 		"Desc": "River Camp 2,970 m / 9,740 ft\nto\nSimikot 2,990 m / 9,800 ft"
 	},
 	{
-		"Day": 151,
+		"Key": 151,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": false,
 		"Date": "2019-09-11T23:00:00.000Z",
 		"FromFt": 0,
 		"ToFt": 0,
@@ -2481,7 +2926,10 @@
 		"Desc": "  m / 0 ft"
 	},
 	{
-		"Day": 152,
+		"Key": 152,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-12T23:00:00.000Z",
 		"From": "SIMIKOT",
 		"FromM": 2990,
@@ -2498,7 +2946,10 @@
 		"Desc": "Simikot 2,990 m / 9,800 ft\nto\nSalli 2,980 m / 9,770 ft"
 	},
 	{
-		"Day": 153,
+		"Key": 153,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-13T23:00:00.000Z",
 		"From": "SALLI",
 		"FromM": 2980,
@@ -2515,7 +2966,10 @@
 		"Desc": "Salli 2,980 m / 9,770 ft\nto\nYari 3,790 m / 12,400 ft"
 	},
 	{
-		"Day": 154,
+		"Key": 154,
+		"Expedition": "ght",
+		"Type": "day",
+		"HasVideo": true,
 		"Date": "2019-09-14T23:00:00.000Z",
 		"From": "YARI",
 		"FromM": 3790,
