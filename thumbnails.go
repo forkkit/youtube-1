@@ -24,7 +24,7 @@ import (
 const fontSize = 75
 const SQUARE = false
 
-func transformImage(item *VideoData, file io.Reader) (io.Reader, error) {
+func transformImage(item *VideoData, file io.Reader, preview bool) (io.Reader, error) {
 	imgIn, err := ioutil.ReadAll(file)
 	if err != nil {
 		return nil, fmt.Errorf("reading image: %w", err)
@@ -43,82 +43,90 @@ func transformImage(item *VideoData, file io.Reader) (io.Reader, error) {
 		height = 1280
 	}
 
-	rgba := imaging.Fill(img, 1280, height, imaging.Center, imaging.Lanczos)
-
-	bold, err := getFont("./JosefinSans-Bold.ttf")
-	if err != nil {
-		return nil, err
-	}
-	regular, err := getFont("./JosefinSans-Regular.ttf")
-	if err != nil {
-		return nil, err
+	var rgba *image.NRGBA
+	if preview {
+		rgba = imaging.Fit(img, 1920, 1920, imaging.Lanczos)
+	} else {
+		rgba = imaging.Fill(img, 1280, height, imaging.Center, imaging.Lanczos)
 	}
 
-	fg := image.White
-	c := freetype.NewContext()
-	c.SetDPI(72)
-	c.SetFont(bold)
-	c.SetFontSize(fontSize)
-	c.SetClip(rgba.Bounds())
-	c.SetDst(rgba)
-	c.SetSrc(fg)
-	c.SetHinting(font.HintingNone) // font.HintingFull
+	if !preview {
 
-	// Draw background
-	draw.Draw(
-		rgba,
-		image.Rectangle{
-			Min: image.Point{
-				X: 280,
-				Y: 90,
-			},
-			Max: image.Point{
-				X: rgba.Bounds().Max.X,
-				Y: 225,
-			},
-		},
-		image.NewUniform(color.NRGBA{0, 0, 0, 128}),
-		image.Point{},
-		draw.Over,
-	)
-	// Draw the text.
-	_, err = c.DrawString("The Great Himalaya Trail", freetype.Pt(320, 180))
-	if err != nil {
-		return nil, fmt.Errorf("drawing font: %w", err)
-	}
-
-	if item.Type == "day" {
-		c.SetFont(regular)
-
-		// calculate the size of the text by drawing it onto a blank image
-		c.SetDst(image.NewRGBA(image.Rect(0, 0, 1280, height)))
-		pos, err := c.DrawString(fmt.Sprintf("Key %d: %s", item.Key, item.Short), freetype.Pt(0, 0))
+		bold, err := getFont("./JosefinSans-Bold.ttf")
 		if err != nil {
-			return nil, fmt.Errorf("drawing font: %w", err)
+			return nil, err
+		}
+		regular, err := getFont("./JosefinSans-Regular.ttf")
+		if err != nil {
+			return nil, err
 		}
 
+		fg := image.White
+		c := freetype.NewContext()
+		c.SetDPI(72)
+		c.SetFont(bold)
+		c.SetFontSize(fontSize)
+		c.SetClip(rgba.Bounds())
 		c.SetDst(rgba)
+		c.SetSrc(fg)
+		c.SetHinting(font.HintingNone) // font.HintingFull
 
+		// Draw background
 		draw.Draw(
 			rgba,
 			image.Rectangle{
 				Min: image.Point{
-					X: 0,
-					Y: height - 220,
+					X: 280,
+					Y: 90,
 				},
 				Max: image.Point{
-					X: pos.X.Round() + 100,
-					Y: height - 85,
+					X: rgba.Bounds().Max.X,
+					Y: 225,
 				},
 			},
 			image.NewUniform(color.NRGBA{0, 0, 0, 128}),
 			image.Point{},
 			draw.Over,
 		)
-
-		_, err = c.DrawString(fmt.Sprintf("Key %d: %s", item.Key, item.Short), freetype.Pt(50, height-130))
+		// Draw the text.
+		_, err = c.DrawString("The Great Himalaya Trail", freetype.Pt(320, 180))
 		if err != nil {
 			return nil, fmt.Errorf("drawing font: %w", err)
+		}
+
+		if item.Type == "day" {
+			c.SetFont(regular)
+
+			// calculate the size of the text by drawing it onto a blank image
+			c.SetDst(image.NewRGBA(image.Rect(0, 0, 1280, height)))
+			pos, err := c.DrawString(fmt.Sprintf("Day %d: %s", item.Key, item.Short), freetype.Pt(0, 0))
+			if err != nil {
+				return nil, fmt.Errorf("drawing font: %w", err)
+			}
+
+			c.SetDst(rgba)
+
+			draw.Draw(
+				rgba,
+				image.Rectangle{
+					Min: image.Point{
+						X: 0,
+						Y: height - 220,
+					},
+					Max: image.Point{
+						X: pos.X.Round() + 100,
+						Y: height - 85,
+					},
+				},
+				image.NewUniform(color.NRGBA{0, 0, 0, 128}),
+				image.Point{},
+				draw.Over,
+			)
+
+			_, err = c.DrawString(fmt.Sprintf("Day %d: %s", item.Key, item.Short), freetype.Pt(50, height-130))
+			if err != nil {
+				return nil, fmt.Errorf("drawing font: %w", err)
+			}
 		}
 	}
 
@@ -183,7 +191,7 @@ func previewThumbnails(ctx context.Context) error {
 				}
 			}
 			if item == nil {
-				return fmt.Errorf("no item for type %s and key %d for file %q", itemType, keyNumber, f.Name)
+				return fmt.Errorf("no item for type %s and key %d for file %q", itemType, keyNumber, f.Name())
 			}
 			item.ThumbnailTesting = f
 		}
@@ -201,7 +209,7 @@ func previewThumbnails(ctx context.Context) error {
 			return fmt.Errorf("opening thumbnail: %w", err)
 		}
 
-		f, err := transformImage(item, input)
+		f, err := transformImage(item, input, true)
 		if err != nil {
 			input.Close()
 			return fmt.Errorf("transforming thumbnail: %w", err)
@@ -350,4 +358,132 @@ var ImageFilenames = map[int]string{
 	152: "D152_imxpdf",
 	153: "D153_utf5cg",
 	154: "D154_yiiy2b",
+}
+
+var imageFilenamesNoText = map[int]string{
+	1:   "D001_mu7e02",
+	2:   "D002_kpz0qa",
+	3:   "D003_ecut84",
+	4:   "D004_wq7mlt",
+	5:   "D005_o3lz5y",
+	7:   "D007_fxniig",
+	8:   "D008_pttufv",
+	10:  "D010_zqsnfi",
+	12:  "D012_py87ov",
+	13:  "D013_pag5yl",
+	14:  "D014_zqvjxd",
+	16:  "D016_kxcm0y",
+	17:  "D017_yvpf4x",
+	18:  "D018_mnsuoj",
+	21:  "D021_eom8qg",
+	22:  "D022_n8jsxl",
+	23:  "D023_bbsc02",
+	24:  "D024_wnkpep",
+	25:  "D025_itsal9",
+	27:  "D027_siruo6",
+	28:  "D028_ljdqml",
+	29:  "D029_vncgix",
+	30:  "D030_z8keod",
+	31:  "D031_rfijnp",
+	32:  "D032_txfmyg",
+	33:  "D033_otozka",
+	34:  "D034_n0vaoi",
+	36:  "D036_qt0edv",
+	37:  "D037_rxryye",
+	38:  "D038_w2yyqm",
+	39:  "D039_gsv2d3",
+	40:  "D040_aum2rl",
+	41:  "D041_xqfsur",
+	42:  "D042_nmogbx",
+	43:  "D043_x8iulf",
+	45:  "D045_gunwmc",
+	46:  "D046_lpkufh",
+	47:  "D047_rc2ehz",
+	48:  "D048_ymadff",
+	49:  "D049_geloif",
+	50:  "D050_dneuov",
+	51:  "D051_ckk1fp",
+	53:  "D053_dhdm2k",
+	54:  "D054_v6ed28",
+	55:  "D055_ishorw",
+	56:  "D056_z1m7ml",
+	57:  "D057_o9gwaw",
+	58:  "D058_u1dsve",
+	60:  "D060_xgb3je",
+	61:  "D061_fi5dov",
+	62:  "D062_lt1xlk",
+	63:  "D063_oumtz2",
+	64:  "D064_d4pjji",
+	65:  "D065_elyfhy",
+	67:  "D067_a4cuqz",
+	68:  "D068_hg9gdb",
+	69:  "D069_ewntx6",
+	71:  "D071_iah2mz",
+	72:  "D072_tmkb6n",
+	73:  "D073_xmqte9",
+	74:  "D074_ytyfcg",
+	75:  "D075_ky40tc",
+	76:  "D076_afypus",
+	77:  "D077_d4pmea",
+	78:  "D078_sa8okk",
+	79:  "D079_lsjgno",
+	80:  "D080_w75olh",
+	82:  "D082_nz8guz",
+	83:  "D083_dwdeoa",
+	88:  "D088_y1x8u4",
+	89:  "D089_i6tihc",
+	90:  "D090_pltrqj",
+	91:  "D091_bc3joa",
+	92:  "D092_vtjycm",
+	95:  "D095_hxmkug",
+	97:  "D097_jqwk7c",
+	98:  "D098_mtrmwz",
+	100: "D100_waasnf",
+	101: "D101_k0uryi",
+	103: "D103_yup1wk",
+	104: "D104_d80ijs",
+	105: "D105_mvqsiu",
+	106: "D106_jx8bx1",
+	107: "D107_jh5krn",
+	108: "D108_bzhfsq",
+	109: "D109_wnwymz",
+	110: "D110_y1ywuj",
+	111: "D111_dkbjtd",
+	112: "D112_dr0nwm",
+	113: "D113_ulop5w",
+	115: "D115_stppqo",
+	116: "D116_ppemed",
+	117: "D117_hwnflh",
+	118: "D118_tpx08x",
+	120: "D120_j3gcun",
+	121: "D121_puszmu",
+	122: "D122_ecsrse",
+	123: "D123_uvlzjh",
+	124: "D124_hnfoer",
+	125: "D125_naabvr",
+	126: "D126_yoaarh",
+	127: "D127_a5isaj",
+	129: "D129_xtt465",
+	130: "D130_gt3lac",
+	131: "D131_dpnqyw",
+	132: "D132_txy67n",
+	133: "D133_h7kyej",
+	134: "D134_fgfslu",
+	136: "D136_omzu6o",
+	137: "D137_pib7tx",
+	138: "D138_xxsxyh",
+	139: "D139_cmzpac",
+	140: "D140_j3rhz0",
+	141: "D141_lcejdk",
+	142: "D142_qcnggk",
+	143: "D143_duuxmr",
+	145: "D145_y6fmof",
+	146: "D146_kxm2nd",
+	147: "D147_smjy8k",
+	148: "D148_lie6tn",
+	149: "D149_pautnn",
+	150: "D150_ix30eu",
+	152: "D152_hrcd97",
+	153: "D153_csuifi",
+	154: "D154_abqutm",
 }

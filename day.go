@@ -16,7 +16,7 @@ import (
 	youtube "google.golang.org/api/youtube/v3"
 )
 
-var titleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Great Himalaya Trail Key {{ .Key }}`))
+var titleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Great Himalaya Trail Day {{ .Key }}`))
 
 var highlightsTemplate = template.Must(template.New("main").Parse(`{{ if .To }}Today {{ .Self }} {{ .Transport }} from {{ .From }} ({{ .FromLocal }}) to {{ .To }} ({{ .ToLocal }}){{ end -}}
 {{- if .Pass }} via {{ .Pass }} ({{ .PassLocal }}){{ end -}}
@@ -25,7 +25,7 @@ var highlightsTemplate = template.Must(template.New("main").Parse(`{{ if .To }}T
 {{- if .To }}.{{ end }}`))
 
 var ghtDayDescriptionTemplate = template.Must(template.New("main").Parse(`{{ "" -}}
-Key {{ .Key }} of the Great Himalaya Trail - {{ .DateString }} in the {{ .Section }} section. {{ .Highlights }}
+Day {{ .Key }} of the Great Himalaya Trail - {{ .DateString }} in the {{ .Section }} section. {{ .Highlights }}
 
 🔽 The Great Himalaya Trail
 
@@ -76,9 +76,18 @@ func getData() ([]*VideoData, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse ght data json: %w", err)
 	}
+	for _, item := range data {
+		if item.Date.Hour() == 23 {
+			// Not sure why but some of the dates in the Google Sheet json output are 1 hour off
+			item.Date = item.Date.Add(time.Hour)
+		}
+	}
 	var i int
 	for _, item := range data {
 		if !item.HasVideo {
+			continue
+		}
+		if item.Expedition != "ght" || item.Type != "day" {
 			continue
 		}
 		item.Position = i
@@ -141,20 +150,9 @@ func getIndexGht(pointer int, data []*VideoData, usa bool, typ string) string {
 			if item.Section != currentSection {
 				continue
 			}
-			sb.WriteString(fmt.Sprintf("\nKey %d - ", item.Key))
+			sb.WriteString(fmt.Sprintf("\nDay %d - ", item.Key))
 			if item.From == "" {
-				switch item.Rest {
-				case "ADMIN":
-					sb.WriteString("Admin day")
-				case "ALT":
-					sb.WriteString("Acclimatisation day")
-				case "REST":
-					sb.WriteString("Rest day")
-				case "SICK":
-					sb.WriteString("Sick day")
-				case "WEATHER":
-					sb.WriteString("Waiting for the weather")
-				}
+				sb.WriteString(item.ZeroDayDescription())
 			} else {
 				if item.Pass != "" {
 					pass := item.Pass
@@ -413,6 +411,13 @@ type VideoData struct {
 	Highlights         string
 }
 
+func (item VideoData) MustGetFilename() string {
+	s, err := item.GetFilename()
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
 func (item VideoData) GetFilename() (string, error) {
 	metaData := Meta{
 		Version:    1,
@@ -425,4 +430,20 @@ func (item VideoData) GetFilename() (string, error) {
 		return "", fmt.Errorf("encoding youtube meta data json: %w", err)
 	}
 	return base64.StdEncoding.EncodeToString(metaDataBytes), nil
+}
+
+func (item VideoData) ZeroDayDescription() string {
+	switch item.Rest {
+	case "ADMIN":
+		return "Admin day"
+	case "ALT":
+		return "Acclimatisation day"
+	case "REST":
+		return "Rest day"
+	case "SICK":
+		return "Sick day"
+	case "WEATHER":
+		return "Waiting for the weather"
+	}
+	return ""
 }
