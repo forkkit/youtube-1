@@ -44,13 +44,15 @@ func titleCase(s string) string {
 
 func isLocal() bool {
 	host, _ := os.Hostname()
-	return host == "Davids-MacBook-Air.local"
+	fmt.Println(host)
+	return host == "Davids-Air" || host == "Davids-MacBook-Air.local"
 }
 
 func main() {
 	var err error
 	if isLocal() {
-		err = updatePages(context.Background())
+		err = CreateTrailNotes()
+		//err = updatePages(context.Background())
 		//err = previewThumbnails(context.Background())
 	} else {
 		err = saveVideos(context.Background())
