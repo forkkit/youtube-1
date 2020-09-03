@@ -24,7 +24,126 @@ import (
 const fontSize = 75
 const SQUARE = false
 
-func transformImage(item *VideoData, file io.Reader, preview bool) (io.Reader, error) {
+func transformAntImage(item *AntVideoData, file io.Reader, preview bool) (io.Reader, error) {
+	imgIn, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, fmt.Errorf("reading image: %w", err)
+	}
+	imgBuffer := bytes.NewReader(imgIn)
+
+	img, _, err := exiffix.Decode(imgBuffer)
+	if err != nil {
+		return nil, fmt.Errorf("decoding image: %w", err)
+	}
+
+	// 1280x720
+
+	height := 720
+	if SQUARE {
+		height = 1280
+	}
+
+	var rgba *image.NRGBA
+	if preview {
+		rgba = imaging.Fit(img, 1920, 1920, imaging.Lanczos)
+	} else {
+		rgba = imaging.Fill(img, 1280, height, imaging.Center, imaging.Lanczos)
+	}
+
+	if !preview {
+
+		bold, err := getFont("./JosefinSans-Bold.ttf")
+		if err != nil {
+			return nil, err
+		}
+		regular, err := getFont("./JosefinSans-Regular.ttf")
+		if err != nil {
+			return nil, err
+		}
+
+		fg := image.White
+		c := freetype.NewContext()
+		c.SetDPI(72)
+		c.SetFont(bold)
+		c.SetFontSize(fontSize)
+		c.SetClip(rgba.Bounds())
+		c.SetDst(rgba)
+		c.SetSrc(fg)
+		c.SetHinting(font.HintingNone) // font.HintingFull
+
+		// Draw background
+		draw.Draw(
+			rgba,
+			image.Rectangle{
+				Min: image.Point{
+					X: 810,
+					Y: 90,
+				},
+				Max: image.Point{
+					X: rgba.Bounds().Max.X,
+					Y: 225,
+				},
+			},
+			image.NewUniform(color.NRGBA{0, 0, 0, 128}),
+			image.Point{},
+			draw.Over,
+		)
+		// Draw the text.
+		_, err = c.DrawString("Antarctica", freetype.Pt(850, 180))
+		if err != nil {
+			return nil, fmt.Errorf("drawing font: %w", err)
+		}
+
+		if item.Type == "day" {
+			c.SetFont(regular)
+
+			// calculate the size of the text by drawing it onto a blank image
+			c.SetDst(image.NewRGBA(image.Rect(0, 0, 1280, height)))
+			pos, err := c.DrawString(fmt.Sprintf("Day %d: %s", item.Key, item.Short), freetype.Pt(0, 0))
+			if err != nil {
+				return nil, fmt.Errorf("drawing font: %w", err)
+			}
+
+			c.SetDst(rgba)
+
+			draw.Draw(
+				rgba,
+				image.Rectangle{
+					Min: image.Point{
+						X: 0,
+						Y: height - 220,
+					},
+					Max: image.Point{
+						X: pos.X.Round() + 100,
+						Y: height - 85,
+					},
+				},
+				image.NewUniform(color.NRGBA{0, 0, 0, 128}),
+				image.Point{},
+				draw.Over,
+			)
+
+			_, err = c.DrawString(fmt.Sprintf("Day %d: %s", item.Key, item.Short), freetype.Pt(50, height-130))
+			if err != nil {
+				return nil, fmt.Errorf("drawing font: %w", err)
+			}
+		}
+	}
+
+	r, w := io.Pipe()
+
+	go func() {
+		err := jpeg.Encode(w, rgba, nil)
+		if err != nil {
+			w.CloseWithError(err)
+		}
+		w.Close()
+	}()
+
+	return r, nil
+}
+
+func transformGhtImage(item *GhtVideoData, file io.Reader, preview bool) (io.Reader, error) {
 	imgIn, err := ioutil.ReadAll(file)
 	if err != nil {
 		return nil, fmt.Errorf("reading image: %w", err)
@@ -156,7 +275,7 @@ func getFont(fname string) (*truetype.Font, error) {
 }
 
 func previewThumbnails(ctx context.Context) error {
-	data, err := getData()
+	data, err := getAntData()
 	if err != nil {
 		return fmt.Errorf("can't load days: %w", err)
 	}
@@ -174,18 +293,16 @@ func previewThumbnails(ctx context.Context) error {
 			var itemType string
 			fileType := matches[1]
 			switch fileType {
-			case "D":
+			case "A":
 				itemType = "day"
-			case "T":
-				itemType = "trailer"
 			}
 			keyNumber, err := strconv.Atoi(matches[2])
 			if err != nil {
 				return fmt.Errorf("parsing day number from %q: %w", f.Name, err)
 			}
-			var item *VideoData
+			var item *AntVideoData
 			for _, itm := range data {
-				if itm.Expedition == "ght" && itm.Type == itemType && itm.Key == keyNumber {
+				if itm.Expedition == "ant" && itm.Type == itemType && itm.Key == keyNumber {
 					item = itm
 					break
 				}
@@ -209,7 +326,7 @@ func previewThumbnails(ctx context.Context) error {
 			return fmt.Errorf("opening thumbnail: %w", err)
 		}
 
-		f, err := transformImage(item, input, true)
+		f, err := transformAntImage(item, input, false)
 		if err != nil {
 			input.Close()
 			return fmt.Errorf("transforming thumbnail: %w", err)

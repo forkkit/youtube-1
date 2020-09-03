@@ -23,18 +23,24 @@ const SingleKey = 0
 const UpdateThumbnails = false
 const UpdateDetails = true
 const ReorderPlaylist = false
-const ApiPartsInsert = "snippet,localizations,status"
-const ApiPartsUpdate = "snippet,localizations"
-const ApiPartsRead = "snippet,localizations,status,fileDetails"
-const PlaylistItemParts = "id,contentDetails,snippet"
-const Playlist = "PLiM-TFJI81R_X4HUrRDjwSJmK-MpqC1dW"
 
-var StartTime = time.Date(2020, 2, 1, 21, 0, 0, 0, time.UTC)
+var ApiPartsInsert = []string{"snippet", "localizations", "status"}
+var ApiPartsUpdateGht = []string{"snippet", "localizations"}
+var ApiPartsUpdateAnt = []string{"snippet", "localizations", "status"}
+var ApiPartsRead = []string{"snippet", "localizations", "status", "fileDetails"}
+var PlaylistItemParts = []string{"id", "contentDetails", "snippet"}
+
+const GhtPlaylist = "PLiM-TFJI81R_X4HUrRDjwSJmK-MpqC1dW"
+const AntPlaylist = "PLiM-TFJI81R-fbq9vC9vQo_PVuys01WJo"
+
+var AntStartTime = time.Date(2020, 9, 3, 20, 0, 0, 0, time.UTC)
+var GhtStartTime = time.Date(2020, 2, 1, 21, 0, 0, 0, time.UTC)
 
 var filenameRegex = regexp.MustCompile(`^([A-Z])([0-9]{3}).*$`)
+var metaRegex = regexp.MustCompile(`\n{(.*)}$`)
 
-const thumbnailTestingImportDir = `/Users/dave/Downloads/thumbnails`
-const thumbnailTestingOutputDir = `/Users/dave/Downloads/thumbnails-compressed`
+const thumbnailTestingImportDir = `/Users/dave/Dropbox/Antarctica/Thumbnails`
+const thumbnailTestingOutputDir = `/Users/dave/Downloads/thumbnails`
 
 const PageOutputDir = "/Users/dave/src/wildernessprime/content/expeditions/great-himalaya-trail"
 
@@ -51,20 +57,20 @@ func isLocal() bool {
 func main() {
 	var err error
 	if isLocal() {
-		err = CreateTrailNotes()
+		//err = CreateTrailNotes()
 		//err = updatePages(context.Background())
-		//err = previewThumbnails(context.Background())
+		err = previewThumbnails(context.Background())
 	} else {
-		err = saveVideos(context.Background())
+		err = saveAntVideos(context.Background())
+		//err = saveGhtVideos(context.Background())
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func saveVideos(ctx context.Context) error {
-
-	data, err := getData()
+func saveAntVideos(ctx context.Context) error {
+	data, err := getAntData()
 	if err != nil {
 		return fmt.Errorf("can't load days: %w", err)
 	}
@@ -74,7 +80,237 @@ func saveVideos(ctx context.Context) error {
 		return fmt.Errorf("can't get drive service: %w", err)
 	}
 
-	f := func(folder string, expected int, expedition string, action func(*VideoData, *drive.File)) error {
+	f := func(folder string, expected int, expedition string, action func(*AntVideoData, *drive.File)) error {
+		files, err := getFilesInFolder(driveService, folder)
+		if err != nil {
+			return fmt.Errorf("getting files in folder: %w", err)
+		}
+		if len(files) != expected {
+			return fmt.Errorf("should be %d files in folder, but found %d", expected, len(files))
+		}
+
+		for _, f := range files {
+			matches := filenameRegex.FindStringSubmatch(f.Name)
+			if len(matches) != 3 {
+				return fmt.Errorf("found file with unknown filename %q", f.Name)
+			} else {
+				var itemType string
+				fileType := matches[1]
+				switch fileType {
+				case "A":
+					itemType = "day"
+				}
+				keyNumber, err := strconv.Atoi(matches[2])
+				if err != nil {
+					return fmt.Errorf("parsing key number from %q: %w", f.Name, err)
+				}
+				var item *AntVideoData
+				for _, itm := range data {
+					if itm.Expedition == expedition && itm.Type == itemType && itm.Key == keyNumber {
+						item = itm
+						break
+					}
+				}
+				if item == nil {
+					return fmt.Errorf("no item for type %s and key %d for file %q", itemType, keyNumber, f.Name)
+				}
+				action(item, f)
+			}
+		}
+		return nil
+	}
+	// Video files:
+	if err := f("1Ok2FOAxkaRNaXgFC0SU_Yr5Lt9U9N0Sk", 28, "ant", func(item *AntVideoData, file *drive.File) { item.File = file }); err != nil {
+		return fmt.Errorf("getting video files from drive: %w", err)
+	}
+	// Thumbnails:
+	if err := f("10eRa2tgHJzkoi65nv3NGBwMt47TWsv4z", 27, "ant", func(item *AntVideoData, file *drive.File) { item.Thumbnail = file }); err != nil {
+		return fmt.Errorf("getting thumbnail files from drive: %w", err)
+	}
+
+	youtubeService, err := getYoutubeService(ctx)
+	if err != nil {
+		return fmt.Errorf("getting youtube service: %w", err)
+	}
+
+	if err := getAntVideos(youtubeService, data); err != nil {
+		return fmt.Errorf("getting videos: %w", err)
+	}
+
+	if err := antUpdateAllStrings(data); err != nil {
+		return fmt.Errorf("updating all strings: %w", err)
+	}
+
+	dataByVideoId := map[string]*AntVideoData{}
+	for _, item := range data {
+		if item.Video != nil {
+			dataByVideoId[item.Video.Id] = item
+		}
+	}
+
+	if ReorderPlaylist {
+		playlistItems, err := getPlaylist(youtubeService, AntPlaylist)
+		if err != nil {
+			return fmt.Errorf("getting playlist items: %w", err)
+		}
+
+		for _, playlistItem := range playlistItems {
+			item := dataByVideoId[playlistItem.ContentDetails.VideoId]
+			item.PlaylistItem = playlistItem
+			playlistItem.Snippet.Position = int64(item.Key)
+		}
+		for _, item := range data {
+			if item.PlaylistItem == nil {
+				continue
+			}
+			fmt.Printf("Updating playlist item for day %d\n", item.Key)
+			_, err := youtubeService.PlaylistItems.Update(PlaylistItemParts, item.PlaylistItem).Do()
+			if err != nil {
+				return fmt.Errorf("updating playlist item: %w", err)
+			}
+		}
+	}
+
+	for _, item := range data {
+		if item.Video == nil {
+			// create new video
+			item.Video = &youtube.Video{}
+		}
+
+		// set the correct PublishAt date, but only for new videos (don't modify this on update)
+		//if item.Video.Id == "" && item.Video.Status == nil {
+		// changing this after setting it breaks the "premiere" feature?
+		// TODO: TEST THIS
+		if item.Video.Status == nil {
+			item.Video.Status = &youtube.VideoStatus{}
+		}
+		if item.Type == "day" {
+			item.Video.Status.PrivacyStatus = "private"
+			item.Video.Status.PublishAt = strings.TrimSuffix(item.LiveTime.Format(time.RFC3339), "Z") + ".0Z"
+		} else {
+			item.Video.Status.PrivacyStatus = "private"
+		}
+		//}
+
+		// add basic data
+		if item.Video.Snippet == nil {
+			item.Video.Snippet = &youtube.VideoSnippet{}
+		}
+		item.Video.Snippet.CategoryId = "19"
+		item.Video.Snippet.ChannelId = "UCFDggPICIlCHp3iOWMYt8cg"
+		item.Video.Snippet.DefaultAudioLanguage = "en"
+		item.Video.Snippet.DefaultLanguage = "en"
+		item.Video.Snippet.LiveBroadcastContent = "none"
+		item.Video.Snippet.Description = item.FullDescription + "\n{" + item.MustGetFilename() + "}"
+		item.Video.Snippet.Title = item.FullTitle
+	}
+
+	for _, day := range data {
+		if day.Video == nil {
+			continue
+		}
+		if day.Video.Id == "" {
+
+			if SingleKey > 0 && SingleKey != day.Key {
+				continue
+			}
+			if SingleType != "" && SingleType != day.Type {
+				continue
+			}
+
+			// insert video
+
+			if InsertVideos {
+
+				fmt.Printf("Inserting video: %q\n", day.Video.Snippet.Title)
+				call := youtubeService.Videos.Insert(ApiPartsInsert, day.Video)
+
+				//filename, err := day.GetFilename()
+				//if err != nil {
+				//	return fmt.Errorf("generating meta data filename: %w", err)
+				//}
+				//call.Header().Add("Slug", filename)
+
+				fmt.Println("Downloading video", day.File.Id)
+				download, err := driveService.Files.Get(day.File.Id).Download()
+				if err != nil {
+					return fmt.Errorf("downloading drive file: %w", err)
+				}
+				insertCall := call.Media(download.Body)
+
+				filename, err := day.GetFilename()
+				if err != nil {
+					return fmt.Errorf("generating meta data filename: %w", err)
+				}
+				insertCall.Header().Add("Slug", filename)
+				//insertCall.Header()["Slug"] = []string{filename}
+
+				if _, err := insertCall.Do(); err != nil {
+					download.Body.Close()
+					return fmt.Errorf("inserting video: %w", err)
+				}
+				download.Body.Close()
+
+			}
+
+		} else {
+			// update video
+
+			if SingleKey > 0 && SingleKey != day.Key {
+				continue
+			}
+			if SingleType != "" && SingleType != day.Type {
+				continue
+			}
+
+			// clear FileDetails because it's not updatable
+			day.Video.FileDetails = nil
+
+			// clear Status because we dont want to update it
+			//day.Video.Status = nil
+
+			if UpdateDetails {
+				fmt.Printf("Updating video: %q\n", day.Video.Snippet.Title)
+				_, err := youtubeService.Videos.Update(ApiPartsUpdateAnt, day.Video).Do()
+				if err != nil {
+					return fmt.Errorf("updating video: %w", err)
+				}
+			}
+
+			if UpdateThumbnails {
+				fmt.Println("Downloading thumbnail", day.Thumbnail.Id)
+				download, err := driveService.Files.Get(day.Thumbnail.Id).Download()
+				if err != nil {
+					return fmt.Errorf("downloading drive file: %w", err)
+				}
+				f, err := transformAntImage(day, download.Body, false)
+				if err != nil {
+					download.Body.Close()
+					return fmt.Errorf("transforming thumbnail: %w", err)
+				}
+				download.Body.Close()
+				if _, err := youtubeService.Thumbnails.Set(day.Video.Id).Media(f).Do(); err != nil {
+					return fmt.Errorf("setting thumbnail: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func saveGhtVideos(ctx context.Context) error {
+
+	data, err := getGhtData()
+	if err != nil {
+		return fmt.Errorf("can't load days: %w", err)
+	}
+
+	driveService, err := getDriveService(ctx)
+	if err != nil {
+		return fmt.Errorf("can't get drive service: %w", err)
+	}
+
+	f := func(folder string, expected int, expedition string, action func(*GhtVideoData, *drive.File)) error {
 		files, err := getFilesInFolder(driveService, folder)
 		if err != nil {
 			return fmt.Errorf("getting files in folder: %w", err)
@@ -100,7 +336,7 @@ func saveVideos(ctx context.Context) error {
 				if err != nil {
 					return fmt.Errorf("parsing key number from %q: %w", f.Name, err)
 				}
-				var item *VideoData
+				var item *GhtVideoData
 				for _, itm := range data {
 					if itm.Expedition == expedition && itm.Type == itemType && itm.Key == keyNumber {
 						item = itm
@@ -116,11 +352,11 @@ func saveVideos(ctx context.Context) error {
 		return nil
 	}
 	// Video files:
-	if err := f("1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD", 126, "ght", func(item *VideoData, file *drive.File) { item.File = file }); err != nil {
+	if err := f("1SPRjcEw1nPhQbj05MejHEvWteM0pRVQD", 126, "ght", func(item *GhtVideoData, file *drive.File) { item.File = file }); err != nil {
 		return fmt.Errorf("getting video files from drive: %w", err)
 	}
 	// Thumbnails:
-	if err := f("1xETuf-n2mRH0REoZp-eLXLn5bzRTe3pi", 126, "ght", func(item *VideoData, file *drive.File) { item.Thumbnail = file }); err != nil {
+	if err := f("1xETuf-n2mRH0REoZp-eLXLn5bzRTe3pi", 126, "ght", func(item *GhtVideoData, file *drive.File) { item.Thumbnail = file }); err != nil {
 		return fmt.Errorf("getting thumbnail files from drive: %w", err)
 	}
 
@@ -129,20 +365,20 @@ func saveVideos(ctx context.Context) error {
 		return fmt.Errorf("getting youtube service: %w", err)
 	}
 
-	playlistItems, err := getPlaylist(youtubeService)
+	playlistItems, err := getPlaylist(youtubeService, GhtPlaylist)
 	if err != nil {
 		return fmt.Errorf("getting playlist items: %w", err)
 	}
 
-	if err := getVideos(youtubeService, data); err != nil {
+	if err := getGhtVideos(youtubeService, data); err != nil {
 		return fmt.Errorf("getting videos: %w", err)
 	}
 
-	if err := updateAllStrings(data); err != nil {
+	if err := ghtUpdateAllStrings(data); err != nil {
 		return fmt.Errorf("updating all strings: %w", err)
 	}
 
-	dataByVideoId := map[string]*VideoData{}
+	dataByVideoId := map[string]*GhtVideoData{}
 	for _, item := range data {
 		if item.Video != nil {
 			dataByVideoId[item.Video.Id] = item
@@ -199,7 +435,7 @@ func saveVideos(ctx context.Context) error {
 		item.Video.Snippet.DefaultAudioLanguage = "en"
 		item.Video.Snippet.DefaultLanguage = "en"
 		item.Video.Snippet.LiveBroadcastContent = "none"
-		item.Video.Snippet.Description = item.FullDescription
+		item.Video.Snippet.Description = item.FullDescription + "\n{" + item.MustGetFilename() + "}"
 		item.Video.Snippet.Title = item.FullTitle
 
 		// add the special USA localized title and description
@@ -270,7 +506,7 @@ func saveVideos(ctx context.Context) error {
 
 			if UpdateDetails {
 				fmt.Printf("Updating video: %q\n", day.Video.Snippet.Title)
-				_, err := youtubeService.Videos.Update(ApiPartsUpdate, day.Video).Do()
+				_, err := youtubeService.Videos.Update(ApiPartsUpdateGht, day.Video).Do()
 				if err != nil {
 					return fmt.Errorf("updating video: %w", err)
 				}
@@ -282,7 +518,7 @@ func saveVideos(ctx context.Context) error {
 				if err != nil {
 					return fmt.Errorf("downloading drive file: %w", err)
 				}
-				f, err := transformImage(day, download.Body, false)
+				f, err := transformGhtImage(day, download.Body, false)
 				if err != nil {
 					download.Body.Close()
 					return fmt.Errorf("transforming thumbnail: %w", err)

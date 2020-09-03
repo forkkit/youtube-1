@@ -15,7 +15,7 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-func getPlaylist(srv *youtube.Service) ([]*youtube.PlaylistItem, error) {
+func getPlaylist(srv *youtube.Service, playlist string) ([]*youtube.PlaylistItem, error) {
 	var all []*youtube.PlaylistItem
 
 	{
@@ -24,7 +24,7 @@ func getPlaylist(srv *youtube.Service) ([]*youtube.PlaylistItem, error) {
 
 		for !done {
 
-			searchResponse, err := srv.PlaylistItems.List(PlaylistItemParts).PlaylistId(Playlist).PageToken(pageToken).Do()
+			searchResponse, err := srv.PlaylistItems.List(PlaylistItemParts).PlaylistId(playlist).PageToken(pageToken).Do()
 			if err != nil {
 				return nil, fmt.Errorf("youtube playlist item list call: %w", err)
 			}
@@ -43,7 +43,7 @@ func getPlaylist(srv *youtube.Service) ([]*youtube.PlaylistItem, error) {
 	return all, nil
 }
 
-func getVideos(srv *youtube.Service, data []*VideoData) error {
+func getAntVideos(srv *youtube.Service, data []*AntVideoData) error {
 
 	var all []*youtube.Video
 
@@ -56,7 +56,7 @@ func getVideos(srv *youtube.Service, data []*VideoData) error {
 			var ids []string
 
 			// Search for all the videos in this channel and make a list of their IDs
-			searchResponse, err := srv.Search.List("id").Type("video").ForMine(true).PageToken(pageToken).Do()
+			searchResponse, err := srv.Search.List([]string{"id"}).Type("video").ForMine(true).PageToken(pageToken).Do()
 			if err != nil {
 				return fmt.Errorf("youtube search list call: %w", err)
 			}
@@ -83,11 +83,99 @@ func getVideos(srv *youtube.Service, data []*VideoData) error {
 
 	// Check for meta data on each video and ignore those without meta data
 	for _, v := range all {
-		if v.FileDetails == nil {
+
+		matches := metaRegex.FindStringSubmatch(v.Snippet.Description)
+		if len(matches) == 0 {
+			continue
+		}
+		metaEncoded := matches[1]
+
+		metaUnmarshaled, err := base64.StdEncoding.DecodeString(metaEncoded)
+		if err != nil {
+			continue // ignore the error - might be a video without metadata in filename
+		}
+
+		var meta Meta
+		if err := json.Unmarshal(metaUnmarshaled, &meta); err != nil {
+			fmt.Println(v.FileDetails.FileName)
+			fmt.Println(metaUnmarshaled)
+			return fmt.Errorf("unmarshaling youtube meta data for ID %s: %w", v.Id, err)
+		}
+
+		if meta.Expedition != "ant" {
 			continue
 		}
 
-		metaUnmarshaled, err := base64.StdEncoding.DecodeString(v.FileDetails.FileName)
+		var item *AntVideoData
+		for _, itm := range data {
+			if itm.Expedition == meta.Expedition && itm.Type == meta.Type && itm.Key == meta.Key {
+				item = itm
+				break
+			}
+		}
+
+		if item == nil {
+			return fmt.Errorf("can't find ant data item for video with expedition %s, type %s, key %d", meta.Expedition, meta.Type, meta.Key)
+		}
+
+		item.Video = v
+	}
+
+	return nil
+}
+
+func getGhtVideos(srv *youtube.Service, data []*GhtVideoData) error {
+
+	var all []*youtube.Video
+
+	{
+		var done bool
+		var pageToken string
+
+		for !done {
+
+			var ids []string
+
+			// Search for all the videos in this channel and make a list of their IDs
+			searchResponse, err := srv.Search.List([]string{"id"}).Type("video").ForMine(true).PageToken(pageToken).Do()
+			if err != nil {
+				return fmt.Errorf("youtube search list call: %w", err)
+			}
+
+			for _, v := range searchResponse.Items {
+				ids = append(ids, v.Id.VideoId)
+			}
+
+			videosResponse, err := srv.Videos.List(ApiPartsRead).Id(strings.Join(ids, ",")).Do()
+			if err != nil {
+				return fmt.Errorf("youtube videos list call: %w", err)
+			}
+
+			for _, v := range videosResponse.Items {
+				all = append(all, v)
+			}
+
+			pageToken = searchResponse.NextPageToken
+			if pageToken == "" {
+				done = true
+			}
+		}
+	}
+
+	// Check for meta data on each video and ignore those without meta data
+	for _, v := range all {
+
+		matches := metaRegex.FindStringSubmatch(v.Snippet.Description)
+		if len(matches) == 0 {
+			continue
+		}
+		metaEncoded := matches[1]
+
+		//if v.FileDetails == nil {
+		//	continue
+		//}
+
+		metaUnmarshaled, err := base64.StdEncoding.DecodeString(metaEncoded)
 		if err != nil {
 			continue // ignore the error - might be a video without metadata in filename
 		}
@@ -97,7 +185,7 @@ func getVideos(srv *youtube.Service, data []*VideoData) error {
 			return fmt.Errorf("unmarshaling youtube meta data for ID %s: %w", v.Id, err)
 		}
 
-		var item *VideoData
+		var item *GhtVideoData
 		for _, itm := range data {
 			if itm.Expedition == meta.Expedition && itm.Type == meta.Type && itm.Key == meta.Key {
 				item = itm
@@ -106,7 +194,7 @@ func getVideos(srv *youtube.Service, data []*VideoData) error {
 		}
 
 		if item == nil {
-			return fmt.Errorf("can't find data item for video with expedition %s, type %s, key %d", meta.Expedition, meta.Type, meta.Key)
+			return fmt.Errorf("can't find ght data item for video with expedition %s, type %s, key %d", meta.Expedition, meta.Type, meta.Key)
 		}
 
 		item.Video = v

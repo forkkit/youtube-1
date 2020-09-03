@@ -15,7 +15,7 @@ import (
 
 func updatePages(ctx context.Context) error {
 
-	data, err := getData()
+	data, err := getGhtData()
 	if err != nil {
 		return fmt.Errorf("can't load days: %w", err)
 	}
@@ -53,7 +53,7 @@ func updatePages(ctx context.Context) error {
 		return nil
 	*/
 
-	if err := updateAllStrings(data); err != nil {
+	if err := ghtUpdateAllStrings(data); err != nil {
 		return fmt.Errorf("updating all strings: %w", err)
 	}
 
@@ -142,7 +142,7 @@ type pageTemplateData struct {
 	DayPadded                           string
 	Day                                 int
 	Title, Highlights, Image, YouTubeId string
-	Item                                *VideoData
+	Item                                *GhtVideoData
 	HasVideo                            bool
 	NoVideoDescription                  string
 }

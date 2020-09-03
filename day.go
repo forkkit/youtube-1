@@ -16,7 +16,26 @@ import (
 	youtube "google.golang.org/api/youtube/v3"
 )
 
-var titleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Great Himalaya Trail Day {{ .Key }}`))
+var antTitleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Antarctica Day {{ .Key }}`))
+
+var antDayDescriptionTemplate = template.Must(template.New("main").Parse(`{{ "" -}}
+Antarctica expedition - {{ .DayAndDate }}.
+
+{{ .Long }}
+
+The Antarctic Peninsular
+
+Hi, I'm Dave Brophy. In January 2020 I sailed on the Icebird Yacht from Argentina to the Antarctic Peninsular for a month of ski mountaineering.
+
+If you'd like more information about the trip, see: https://www.ski-antarctica.com/
+
+More info about my preparation: https://www.wildernessprime.com/expeditions/antarctica/ 
+
+Music in this episode by Blue Dot Sessions: https://www.sessions.blue/
+
+`))
+
+var ghtTitleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Great Himalaya Trail Day {{ .Key }}`))
 
 var highlightsTemplate = template.Must(template.New("main").Parse(`{{ if .To }}Today {{ .Self }} {{ .Transport }} from {{ .From }} ({{ .FromLocal }}) to {{ .To }} ({{ .ToLocal }}){{ end -}}
 {{- if .Pass }} via {{ .Pass }} ({{ .PassLocal }}){{ end -}}
@@ -66,11 +85,38 @@ Music in this episode by Blue Dot Sessions: https://www.sessions.blue/
 
 `))
 
-func getData() ([]*VideoData, error) {
-	var data []*VideoData
+func getAntData() ([]*AntVideoData, error) {
+	var data []*AntVideoData
+	raw, err := ioutil.ReadFile("./ant_data.json")
+	if err != nil {
+		return nil, fmt.Errorf("unable to read data: %w", err)
+	}
+	err = json.Unmarshal(raw, &data)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse ant data json: %w", err)
+	}
+	//for _, item := range data {
+	//if item.Date.Hour() == 23 {
+	//	// Not sure why but some of the dates in the Google Sheet json output are 1 hour off
+	//	item.Date = item.Date.Add(time.Hour)
+	//}
+	//}
+	var i int
+	for _, item := range data {
+		if item.Expedition != "ant" || item.Type != "day" {
+			continue
+		}
+		item.LiveTime = AntStartTime.Add(time.Duration(i*24) * time.Hour)
+		i++
+	}
+	return data, nil
+}
+
+func getGhtData() ([]*GhtVideoData, error) {
+	var data []*GhtVideoData
 	raw, err := ioutil.ReadFile("./ght_data.json")
 	if err != nil {
-		return nil, fmt.Errorf("unable to read ght data: %w", err)
+		return nil, fmt.Errorf("unable to read data: %w", err)
 	}
 	err = json.Unmarshal(raw, &data)
 	if err != nil {
@@ -91,13 +137,13 @@ func getData() ([]*VideoData, error) {
 			continue
 		}
 		item.Position = i
-		item.LiveTime = StartTime.Add(time.Duration(i*24) * time.Hour)
+		item.LiveTime = GhtStartTime.Add(time.Duration(i*24) * time.Hour)
 		i++
 	}
 	return data, nil
 }
 
-func getIndexGht(pointer int, data []*VideoData, usa bool, typ string) string {
+func getIndexGht(pointer int, data []*GhtVideoData, usa bool, typ string) string {
 
 	type sectionData struct {
 		name         string
@@ -204,7 +250,18 @@ func getIndexGht(pointer int, data []*VideoData, usa bool, typ string) string {
 	return sb.String()
 }
 
-func updateAllStrings(data []*VideoData) error {
+func antUpdateAllStrings(data []*AntVideoData) error {
+	for _, item := range data {
+		if item.Expedition == "ant" && item.Type == "day" {
+			if err := updateStringsAntDay(item); err != nil {
+				return fmt.Errorf("updating strings: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+func ghtUpdateAllStrings(data []*GhtVideoData) error {
 	for _, item := range data {
 		if !item.HasVideo {
 			continue
@@ -229,17 +286,17 @@ func updateAllStrings(data []*VideoData) error {
 	return nil
 }
 
-func updateStringsGhtTrailer(item *VideoData, usa bool, index string) error {
+func updateStringsGhtTrailer(item *GhtVideoData, usa bool, index string) error {
 	v := struct {
-		*VideoData
+		*GhtVideoData
 		TotalLocal  string
 		MaxLocal    string
 		AvgLocal    string
 		Index       string
 		ChangeLocal string
 	}{
-		VideoData: item,
-		Index:     index,
+		GhtVideoData: item,
+		Index:        index,
 	}
 
 	if usa {
@@ -275,10 +332,10 @@ func updateStringsGhtTrailer(item *VideoData, usa bool, index string) error {
 	return nil
 }
 
-func updateStringsGhtDay(item *VideoData, usa bool, index string) error {
+func updateStringsGhtDay(item *GhtVideoData, usa bool, index string) error {
 
 	v := struct {
-		*VideoData
+		*GhtVideoData
 		TotalLocal  string
 		MaxLocal    string
 		AvgLocal    string
@@ -287,8 +344,8 @@ func updateStringsGhtDay(item *VideoData, usa bool, index string) error {
 		Self        string
 		Transport   string
 	}{
-		VideoData: item,
-		Index:     index,
+		GhtVideoData: item,
+		Index:        index,
 	}
 
 	if item.Key < 31 {
@@ -333,7 +390,7 @@ func updateStringsGhtDay(item *VideoData, usa bool, index string) error {
 
 	buf := bytes.NewBufferString("")
 
-	if err := titleTemplate.Execute(buf, v); err != nil {
+	if err := ghtTitleTemplate.Execute(buf, v); err != nil {
 		return fmt.Errorf("executing title template: %w", err)
 	}
 
@@ -366,7 +423,68 @@ func updateStringsGhtDay(item *VideoData, usa bool, index string) error {
 	return nil
 }
 
-type VideoData struct {
+func updateStringsAntDay(item *AntVideoData) error {
+
+	v := struct {
+		*AntVideoData
+	}{
+		AntVideoData: item,
+	}
+
+	v.From = titleCase(v.From)
+	v.To = titleCase(v.To)
+
+	buf := bytes.NewBufferString("")
+
+	if err := antTitleTemplate.Execute(buf, v); err != nil {
+		return fmt.Errorf("executing title template: %w", err)
+	}
+
+	v.FullTitle = buf.String()
+
+	//buf = bytes.NewBufferString("")
+
+	//if err := highlightsTemplate.Execute(buf, v); err != nil {
+	//	return fmt.Errorf("executing description template: %w", err)
+	//}
+	//
+	//item.Highlights = buf.String()
+
+	buf = bytes.NewBufferString("")
+
+	if err := antDayDescriptionTemplate.Execute(buf, v); err != nil {
+		return fmt.Errorf("executing description template: %w", err)
+	}
+
+	v.FullDescription = buf.String()
+
+	return nil
+}
+
+type AntVideoData struct {
+	Key        int
+	Expedition string
+	Type       string
+	Date       time.Time
+	From       string
+	Via        string
+	To         string
+	Short      string
+	Title      string
+	Long       string
+	DayAndDate string
+
+	LiveTime         time.Time
+	File             *drive.File
+	Thumbnail        *drive.File
+	Video            *youtube.Video
+	PlaylistItem     *youtube.PlaylistItem
+	FullTitle        string
+	FullDescription  string
+	ThumbnailTesting os.FileInfo
+}
+
+type GhtVideoData struct {
 	Expedition         string
 	Type               string
 	Key                int
@@ -411,14 +529,14 @@ type VideoData struct {
 	Highlights         string
 }
 
-func (item VideoData) MustGetFilename() string {
+func (item GhtVideoData) MustGetFilename() string {
 	s, err := item.GetFilename()
 	if err != nil {
 		panic(err)
 	}
 	return s
 }
-func (item VideoData) GetFilename() (string, error) {
+func (item GhtVideoData) GetFilename() (string, error) {
 	metaData := Meta{
 		Version:    1,
 		Expedition: item.Expedition,
@@ -432,7 +550,28 @@ func (item VideoData) GetFilename() (string, error) {
 	return base64.StdEncoding.EncodeToString(metaDataBytes), nil
 }
 
-func (item VideoData) ZeroDayDescription() string {
+func (item AntVideoData) MustGetFilename() string {
+	s, err := item.GetFilename()
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+func (item AntVideoData) GetFilename() (string, error) {
+	metaData := Meta{
+		Version:    1,
+		Expedition: item.Expedition,
+		Type:       item.Type,
+		Key:        item.Key,
+	}
+	metaDataBytes, err := json.Marshal(metaData)
+	if err != nil {
+		return "", fmt.Errorf("encoding youtube meta data json: %w", err)
+	}
+	return base64.StdEncoding.EncodeToString(metaDataBytes), nil
+}
+
+func (item GhtVideoData) ZeroDayDescription() string {
 	switch item.Rest {
 	case "ADMIN":
 		return "Admin day"
