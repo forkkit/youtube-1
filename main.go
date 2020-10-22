@@ -61,8 +61,8 @@ func main() {
 		//err = updatePages(context.Background())
 		err = previewThumbnails(context.Background())
 	} else {
-		err = saveAntVideos(context.Background())
-		//err = saveGhtVideos(context.Background())
+		//err = saveAntVideos(context.Background())
+		err = saveGhtVideos(context.Background())
 	}
 	if err != nil {
 		log.Fatal(err)

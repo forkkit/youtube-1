@@ -185,6 +185,10 @@ func getGhtVideos(srv *youtube.Service, data []*GhtVideoData) error {
 			return fmt.Errorf("unmarshaling youtube meta data for ID %s: %w", v.Id, err)
 		}
 
+		if meta.Expedition != "ght" {
+			continue
+		}
+
 		var item *GhtVideoData
 		for _, itm := range data {
 			if itm.Expedition == meta.Expedition && itm.Type == meta.Type && itm.Key == meta.Key {

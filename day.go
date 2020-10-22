@@ -35,7 +35,11 @@ Music in this episode by Blue Dot Sessions: https://www.sessions.blue/
 
 `))
 
-var ghtTitleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Great Himalaya Trail Day {{ .Key }}`))
+//var ghtTitleTemplate = template.Must(template.New("main").Parse(`{{ .Title }} Great Himalaya Trail Day {{ .Key }}`))
+var ghtTitleTemplate = template.Must(template.New("main").Parse(`Day {{ .Key }}: {{ .From -}}
+{{- if .To }} to {{ .To }}{{ end -}}
+{{- if .Pass }} via {{ if eq .Key 117 }}{{ .SecondPass }} {{ .SecondLocal }}{{ else }}{{ .Pass }} {{ .PassLocal }}{{ end }}{{ else }}{{ if gt .ToM 4999 }} {{.ToLocal}}{{ end }}{{ end }}
+{{- if .End }} {{ .End }}{{ end -}}`))
 
 var highlightsTemplate = template.Must(template.New("main").Parse(`{{ if .To }}Today {{ .Self }} {{ .Transport }} from {{ .From }} ({{ .FromLocal }}) to {{ .To }} ({{ .ToLocal }}){{ end -}}
 {{- if .Pass }} via {{ .Pass }} ({{ .PassLocal }}){{ end -}}
@@ -44,19 +48,19 @@ var highlightsTemplate = template.Must(template.New("main").Parse(`{{ if .To }}T
 {{- if .To }}.{{ end }}`))
 
 var ghtDayDescriptionTemplate = template.Must(template.New("main").Parse(`{{ "" -}}
-Day {{ .Key }} of the Great Himalaya Trail - {{ .DateString }} in the {{ .Section }} section. {{ .Highlights }}
+Great Himalaya Trail - Day {{ .Key }} - {{ .DateString }} in the {{ .Section }} section. {{ .Highlights }} {{ .Title }} 
 
 🔽 The Great Himalaya Trail
 
 Hi, I'm Dave Brophy. From April to September 2019 Mathi and I thru-hiked the Great Himalaya Trail across Nepal.
 
-The concept of the Great Himalaya Trail is to follow the highest elevation continuous hiking route across the Himalayas. The Nepal section stretches for {{ .TotalLocal }} from Kanchenjunga in the east to Humla in the west. It winds through the mountains with an average elevation of {{ .AvgLocal }}, and up to {{ .MaxLocal }}, with an average elevation change of {{ .ChangeLocal }} per day. The route includes parts of the more commercialised treks, linking them together with sections that are so remote even the locals seldom hike there. 
+The concept of the Great Himalaya Trail is to follow the highest elevation continuous hiking route across the Himalayas. The Nepal section stretches for {{ .TotalLocal }} from Kanchenjunga in the east to Humla in the west. It winds through the mountains with an average elevation of {{ .AvgLocal }}, and up to {{ .MaxLocal }}, with an average daily ascent of over {{ .ChangeLocal }}. The route includes parts of the more commercialised treks, linking them together with sections that are so remote even the locals seldom hike there. 
 
 🔽 Get Involved
 
-If you're thinking about hiking the GHT yourself, join our WhatsApp group: https://chat.whatsapp.com/D5kC4kBc7SALDE8WctMmrH
+More info about the trek: https://www.wildernessprime.com/expeditions/great-himalaya-trail/
 
-More info about our preparation for the trek: https://www.wildernessprime.com/expeditions/great-himalaya-trail/ 
+If you're thinking about hiking the GHT yourself, join our WhatsApp group: https://chat.whatsapp.com/D5kC4kBc7SALDE8WctMmrH
 
 Our logistics were arranged by Narayan at Mac Trek: http://www.mactreks.com/
 
@@ -69,13 +73,13 @@ Music in this episode by Blue Dot Sessions: https://www.sessions.blue/
 var ghtTrailerDescriptionTemplate = template.Must(template.New("main").Parse(`{{ "" -}}
 Hi, I'm Dave Brophy. From April to September 2019 Mathi and I thru-hiked the Great Himalaya Trail across Nepal. This vlog follows our progress, with 125 episodes - one for each day of our hike.
 
-The concept of the Great Himalaya Trail is to follow the highest elevation continuous hiking route across the Himalayas. The Nepal section stretches for {{ .TotalLocal }} from Kanchenjunga in the east to Humla in the west. It winds through the mountains with an average elevation of {{ .AvgLocal }}, and up to {{ .MaxLocal }}, with an average elevation change of {{ .ChangeLocal }} per day. The route includes parts of the more commercialised treks, linking them together with sections that are so remote even the locals seldom hike there. 
+The concept of the Great Himalaya Trail is to follow the highest elevation continuous hiking route across the Himalayas. The Nepal section stretches for {{ .TotalLocal }} from Kanchenjunga in the east to Humla in the west. It winds through the mountains with an average elevation of {{ .AvgLocal }}, and up to {{ .MaxLocal }}, with an average daily ascent of over {{ .ChangeLocal }}. The route includes parts of the more commercialised treks, linking them together with sections that are so remote even the locals seldom hike there. 
 
 🔽 Get Involved
 
-If you're thinking about hiking the GHT yourself, join our WhatsApp group: https://chat.whatsapp.com/D5kC4kBc7SALDE8WctMmrH
+More info about the trek: https://www.wildernessprime.com/expeditions/great-himalaya-trail/
 
-More info about our preparation for the trek: https://www.wildernessprime.com/expeditions/great-himalaya-trail/ 
+If you're thinking about hiking the GHT yourself, join our WhatsApp group: https://chat.whatsapp.com/D5kC4kBc7SALDE8WctMmrH
 
 Our logistics were arranged by Narayan at Mac Trek: http://www.mactreks.com/
 
@@ -303,12 +307,12 @@ func updateStringsGhtTrailer(item *GhtVideoData, usa bool, index string) error {
 		v.TotalLocal = "900 miles"
 		v.MaxLocal = "20,300 ft"
 		v.AvgLocal = "12,300 ft"
-		v.ChangeLocal = "5,200 ft"
+		v.ChangeLocal = "3,250 ft"
 	} else {
 		v.TotalLocal = "1,400 km"
 		v.MaxLocal = "6,200 m"
 		v.AvgLocal = "3,750 m"
-		v.ChangeLocal = "1,600 m"
+		v.ChangeLocal = "1,000 m"
 	}
 
 	if usa {
@@ -375,7 +379,7 @@ func updateStringsGhtDay(item *GhtVideoData, usa bool, index string) error {
 		v.TotalLocal = "900 miles"
 		v.MaxLocal = "20,300 ft"
 		v.AvgLocal = "12,300 ft"
-		v.ChangeLocal = "5,200 ft"
+		v.ChangeLocal = "3,250 ft"
 	} else {
 		v.FromLocal = fmt.Sprintf("%s m", humanize.Comma(int64(v.FromM)))
 		v.ToLocal = fmt.Sprintf("%s m", humanize.Comma(int64(v.ToM)))
@@ -385,7 +389,7 @@ func updateStringsGhtDay(item *GhtVideoData, usa bool, index string) error {
 		v.TotalLocal = "1,400 km"
 		v.MaxLocal = "6,200 m"
 		v.AvgLocal = "3,750 m"
-		v.ChangeLocal = "1,600 m"
+		v.ChangeLocal = "1,000 m"
 	}
 
 	buf := bytes.NewBufferString("")
